@@ -27,7 +27,6 @@ import database.DataBase;
 import modelTable.TablePessoa;
 import models.Municipio;
 import models.Pessoa;
-import service.ServiceMunicipio;
 import service.ServicePessoa;
 
 public class InterfacePessoa extends JFrame {
@@ -39,7 +38,7 @@ public class InterfacePessoa extends JFrame {
 	private String cpf;
 	private String sexo;
 	private Date dataNascimento;
-	private String dataConvertida;
+	private Date dataConvertida;
 	private String logradouro;
 	private String bairro;
 	private String cep;
@@ -166,12 +165,13 @@ public class InterfacePessoa extends JFrame {
 					numero = pessoa.getNumero();
 					complemento = pessoa.getComplemento();
 					email = pessoa.getEmail();
-					//String municipio = pessoa.ge
+					//String data = dataString(dataNascimento); 
 				
 					txfNome.setText(nome);
 					txfCpf.setText(cpf);
 					txfSexo.setText(sexo);
-					txfDataNascimento.setText(dataNascimento);
+				
+					//txfDataNascimento.setText(data);
 					txfLogradouro.setText(logradouro);
 					txfBairro.setText(bairro);
 					txfCep.setText(cep);
@@ -366,15 +366,11 @@ public class InterfacePessoa extends JFrame {
 	void defineMask() {
 		 try {
 			mascaraCpf = new MaskFormatter("###.###.###-##");
-			//mascaraData = new MaskFormatter("yyyy-MM-dd");
 			mascaraData = new MaskFormatter("##/##/####");
 			mascaraCep = new MaskFormatter("#####-###");
 			mascaraData.setPlaceholderCharacter('_');
 			mascaraCpf.setPlaceholderCharacter('_');
 			mascaraCep.setPlaceholderCharacter('_');
-			
-
-		//JFormattedTextField txtDate = new JFormattedTextField();
 
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -483,8 +479,7 @@ public class InterfacePessoa extends JFrame {
 				nome = txfNome.getText();
 				cpf = jFormattedTextCpf.getText();
 				sexo = (String) jcSexo.getSelectedItem();
-				dataNascimento = jFormattedTextData.getText();
-				dataConvertida = pessoaService.dataParaSalvar(dataNascimento);
+				String data = jFormattedTextData.getText();
 				email = txfEmail.getText();
 				logradouro = txfLogradouro.getText();
 				bairro = txfBairro.getText();
@@ -493,6 +488,13 @@ public class InterfacePessoa extends JFrame {
 				complemento = txfComplemento.getText();
 				nomeMunicipio = (String) municipios.getSelectedItem();
 				idMunucipio=pessoaService.salvarMunicipio(nomeMunicipio);
+				System.out.println(idMunucipio);
+				try {
+					dataConvertida = pessoaService.dataParaSalvar(data);
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			 
 
 			
@@ -556,9 +558,7 @@ public class InterfacePessoa extends JFrame {
 						
 					}
 					else {
-						campoValidacao(nome,contcpf,contdata,email,logradouro,bairro,contcep);
-						JOptionPane.showMessageDialog(null, "ESSSS");
-						
+						campoValidacao(nome,contcpf,contdata,email,logradouro,bairro,contcep);						
 					}
 				}
 			}

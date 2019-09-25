@@ -26,12 +26,12 @@ public class ServicePessoa {
 			ps.setString(3, pessoa.getSexo());
 			ps.setDate(4, pessoa.getDataNascimento());
 			ps.setString(5, pessoa.getLogradouro());
-			ps.setString(6, pessoa.getBairro());
-			ps.setString(7, pessoa.getCep());
-			ps.setString(8, pessoa.getNumero());
-			ps.setString(9, pessoa.getComplemento());
-			ps.setString(10, pessoa.getEmail());
-			ps.setInt(11, pessoa.getIdMunicipio());
+			ps.setString(6, pessoa.getCep());
+			ps.setString(7, pessoa.getNumero());
+			ps.setString(8, pessoa.getComplemento());
+			ps.setString(9, pessoa.getEmail());
+			ps.setInt(10, pessoa.getIdMunicipio());
+			ps.setString(11, pessoa.getBairro());
 
 			ps.executeUpdate();
 		}
@@ -61,7 +61,7 @@ public class ServicePessoa {
 			ps.setString(1, pessoa.getCpf());
 			ps.setString(2, pessoa.getNome());
 			ps.setString(3, pessoa.getSexo());
-			ps.setDate(4,(Date) pessoa.getDataNascimento());
+			ps.setDate(4, pessoa.getDataNascimento());
 			ps.setString(5, pessoa.getLogradouro());
 			ps.setString(6, pessoa.getCep());
 			ps.setString(7, pessoa.getNumero());
@@ -94,7 +94,7 @@ public class ServicePessoa {
 				String cpf = result.getString(2);
 				String nomePessoa = result.getString(3);
 				String sexo = result.getString(4);
-				String dataNascimento = result.getString(5);
+				Date dataNascimento = result.getDate(5);
 				String logradouro = result.getString(6);
 				String cep = result.getString(7);
 				String numero = result.getString(9);
@@ -137,7 +137,7 @@ public class ServicePessoa {
 					String cpf = result.getString(2);
 					String nomePessoa = result.getString(3);
 					String sexo = result.getString(4);
-					String dataNascimento = result.getString(5);
+					Date dataNascimento = result.getDate(5);
 					String logradouro = result.getString(6);
 					String cep = result.getString(7);
 					String numero = result.getString(9);
@@ -201,7 +201,7 @@ public class ServicePessoa {
 			while(result.next()) {
 				int idMunicipio = result.getInt(1);
 				String nomeMunicipio = result.getString(2);
-				if(nomeMunicipio==municipioID)
+				if(nomeMunicipio.equals(municipioID))
 					return idMunicipio;
 			}		
 		}

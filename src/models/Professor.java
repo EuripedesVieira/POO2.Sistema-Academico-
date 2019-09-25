@@ -5,6 +5,8 @@ public class Professor {
 	private int idProfessor;
 	private String matriculaProfessor;
 	private String formacao;
+	private String nomeProfessor;
+	private String cpfProfessor;
 	
 	public int getIdProfessor() {
 		return idProfessor;
@@ -24,6 +26,20 @@ public class Professor {
 	public void setFormacao(String formacao) {
 		this.formacao = formacao;
 	}
+	public String getNomeProfessor() {
+		return nomeProfessor;
+	}
+	public void setNomeProfessor(String nomeProfessor) {
+		this.nomeProfessor = nomeProfessor;
+	}
+	public String getCpfProfessor() {
+		return cpfProfessor;
+	}
+	public void setCpfProfessor(String cpfProfessor) {
+		this.cpfProfessor = cpfProfessor;
+	}
+	
+	
 }
 	
 

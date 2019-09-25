@@ -86,8 +86,10 @@ public class InterfaceDisciplina extends JFrame {
 	void modeloTabelaM() {
 		ModelotabelaDisciplina = new TableDisciplina(listaDisciplina);
 		tblDisciplina = new JTable(ModelotabelaDisciplina);
+		tblDisciplina.setBackground(Color.white);
 		scrlDisciplina = new JScrollPane(tblDisciplina);
 		scrlDisciplina.setBounds(30, 200, 620, 200);
+		scrlDisciplina.setBackground(Color.white);
 
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder("Dsiciplinas");
@@ -119,6 +121,7 @@ public class InterfaceDisciplina extends JFrame {
 		setTitle("Disciplinas");
 		containerPrincipal = new JPanel();
 		containerPrincipal.setLayout(null);
+		containerPrincipal.setBackground(Color.white);
 		add(containerPrincipal);
 	};
 
@@ -275,6 +278,12 @@ public class InterfaceDisciplina extends JFrame {
 		});
 	};
 
+/*
+	public void disciplinaInterface() throws IOException {
+		new InterfaceDisciplina();
+
+	};*/
+	
 	
 	public static void main(String[] args) throws IOException{
 		new InterfaceDisciplina();

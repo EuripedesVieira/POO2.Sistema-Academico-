@@ -1,13 +1,13 @@
 package models;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Pessoa {
 	private int idPessoa;
 	private String nome;
 	private String cpf;
 	private String sexo;
-	private Date dataNascimento;
+	private java.sql.Date dataNascimento;
 	private String logradouro;
 	private String bairro;
 	private String cep;

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import database.DataBase;
+import modelTable.TableDisciplina;
 import modelTable.TableGrade;
 import models.Curso;
 import models.Disciplina;
@@ -32,6 +32,7 @@ public class InterfaceGrade extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel containerPrincipal;
+	private JPanel containerDisci;
 	private JTextField txfNome;
 
 	private JLabel jlNome;
@@ -45,17 +46,28 @@ public class InterfaceGrade extends JFrame {
 	private JButton jbExcluir;
 	private JButton jbCancelar;
 	
-	private JCheckBox[] disciplinas = new JCheckBox[100];
-
+	private JButton jbAdicionar;
+	private JButton jbRemover;
+	private JButton jbAddTodos;
+	private JButton jbRemoverTodos;
 	
 	private List<Grade> listaGrade = new ArrayList<Grade>();
 	private List<Curso> listaCurso = new ArrayList<Curso>();
 	private List<Disciplina> listaDisciplina = new ArrayList<Disciplina>();
+	private List<Disciplina> listaDisciplinaAdds = new ArrayList<Disciplina>();
 
 	
 	private TableGrade ModelotabelaGrade;
 	private JTable tblGrade;
 	private JScrollPane scrlGrade;
+	
+	private TableDisciplina ModelotabelaDisciplina;
+	private JTable tblDisciplina;
+	private JScrollPane scrlDisciplina;
+	
+	private TableDisciplina ModelotabelaDisciplinaAdds;
+	private JTable tblDisciplinaAdds;
+	private JScrollPane scrlDisciplinaAdds;
 	
 	private String nomeGrade;
 	private String curso;
@@ -64,8 +76,11 @@ public class InterfaceGrade extends JFrame {
 	private int numeroLinha;
 	private int id;
 	private int idCurso;		
-	private boolean clickDuplo= false; 
-	
+	private boolean clickDuplo= false;
+	private boolean disciplinaSelecionada=false;
+	private boolean disciplinaAddSelecionada=false;
+
+
 	
 	Grade grade = new Grade();
 	DataBase database = new DataBase();
@@ -82,12 +97,13 @@ public class InterfaceGrade extends JFrame {
 		defineTxf();
 		defineLb();
 		defineBt();
-		percorreDisciplina();
 		action();
+		containerDisciplina();
 		buscarTabela();
 		modeloTabelaM();
+		ModeloTabelaDisciplina();
+		ModeloTabelaDisciplinaAdds();
 		percorre();
-		containerPrincipal.add(scrlGrade);
 		setVisible(true);
 	}
 	
@@ -95,7 +111,8 @@ public class InterfaceGrade extends JFrame {
 		listaGrade.clear();
 		gradeService.buscar(listaGrade);
 		gradeService.buscarCursos(listaCurso);
-	
+		gradeService.buscarDisciplinas(listaDisciplina);
+
 		}
 
 	void percorre() {
@@ -106,45 +123,75 @@ public class InterfaceGrade extends JFrame {
 			cursos.addItem(muni);
 		}
 	}
+
+	void containerDisciplina(){
 		
-	void percorreDisciplina() {
-		int x=30;
-		int y=100;
-		int a=0;
+		TitledBorder title;
+		title = BorderFactory.createTitledBorder("Disciplinas");
+		title.setTitleColor(Color.black);
 	
+		containerDisci = new JPanel();
+		containerDisci.setBounds(30, 105, 1160, 300);
+		containerDisci.setBorder(title);
+		containerPrincipal.add(containerDisci);
+		containerDisci.setLayout(null);
+		containerDisci.setVisible(true);
 		
-		gradeService.buscarDisciplinas(listaDisciplina);
-		for(int i=0; i<listaDisciplina.size(); i++) {
-			Disciplina disciplina;
-			disciplina = listaDisciplina.get(i);
-			String nomeDisciplina = disciplina.getNomeDisciplina(); 
-			
-			//JCheckBox primary = new JCheckBox(nomeDisciplina);
-			disciplinas[i]= new JCheckBox(nomeDisciplina);
-			disciplinas[i].setBounds(x, y, 300, 20);
-			containerPrincipal.add(disciplinas[i]);
-			x+=330;
-			a+=1;
-			if(a==4) {
-				y=y+20;
-				a=0;
-				x=30;
+		jbAdicionar =new JButton(">");
+		jbAdicionar.setBounds(540,50,80,30);
+		containerDisci.add(jbAdicionar);
+		
+		jbAddTodos = new JButton(">>");
+		jbAddTodos.setBounds(540, 100, 80, 30);
+		containerDisci.add(jbAddTodos);
+		jbAddTodos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				for(int i=0; i<listaDisciplina.size(); i++) {
+					Disciplina x = listaDisciplina.get(i);
+					if(percorrelistaDisciplina(x.getIdDisciplina()))
+						listaDisciplinaAdds.add(x);
+				}
+				containerDisci.add(scrlDisciplinaAdds);
 			}
+		});
 		
-		}
+		jbRemover = new JButton("<");
+		jbRemover.setBounds(540, 150, 80, 30);
+		containerDisci.add(jbRemover);
+		jbRemover.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(disciplinaAddSelecionada) {
+					listaDisciplinaAdds.remove(numeroLinha);
+					containerDisci.add(scrlDisciplinaAdds);
+					disciplinaAddSelecionada=false;
+					JOptionPane.showMessageDialog(null, "Disciplina removida");
+				}
+			}
+		});
 		
+		jbRemoverTodos = new JButton("<<");
+		jbRemoverTodos.setBounds(540, 200, 80, 30);
+		containerDisci.add(jbRemoverTodos);
+		jbRemoverTodos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				listaDisciplinaAdds.clear();
+				containerDisci.add(scrlDisciplinaAdds);
+			}
+		});
+
 	}
 	
 	void modeloTabelaM() {
 		ModelotabelaGrade = new TableGrade(listaGrade);
 		tblGrade = new JTable(ModelotabelaGrade);
 		scrlGrade = new JScrollPane(tblGrade);
-		scrlGrade.setBounds(30, 300, 620, 200);
+		scrlGrade.setBounds(30, 480, 500, 240);
 
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder("Grades");
 		title.setTitleColor(Color.black);
 		scrlGrade.setBorder(title);
+		containerPrincipal.add(scrlGrade);
 		tblGrade.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() >= 2) {
@@ -159,11 +206,92 @@ public class InterfaceGrade extends JFrame {
 					txfNome.setText(nomeGrade);
 					cursos.setSelectedItem(curso);
 					
+					listaDisciplinaAdds.clear();
+					gradeService.buscarDisciplinasSelecionadas(listaDisciplinaAdds,id);
+					containerDisci.add(scrlDisciplinaAdds);
+					
 					clickDuplo = true;
 					jlobrigatorio1.setVisible(false);
 				}
 			}
 		});
+	}
+	
+	void ModeloTabelaDisciplina(){
+		
+		ModelotabelaDisciplina = new TableDisciplina(listaDisciplina);
+		tblDisciplina = new JTable(ModelotabelaDisciplina);
+		scrlDisciplina = new JScrollPane(tblDisciplina);
+		scrlDisciplina.setBounds(30, 30, 500, 240);
+
+		TitledBorder title;
+		title = BorderFactory.createTitledBorder("Todas as disciplinas");
+		title.setTitleColor(Color.black);
+		scrlDisciplina.setBorder(title);
+		containerDisci.add(scrlDisciplina);
+		
+		tblDisciplina.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+
+				numeroLinha = tblDisciplina.getSelectedRow();
+				
+				if (e.getClickCount()==1){
+					disciplinaSelecionada=true;
+				}
+				
+				
+				if (e.getClickCount() >= 2) {
+					Disciplina disciplina = listaDisciplina.get(numeroLinha);
+					if(percorrelistaDisciplina(disciplina.getIdDisciplina())){
+						listaDisciplinaAdds.add(disciplina);
+						disciplinaSelecionada=false;
+						containerDisci.add(scrlDisciplinaAdds);}
+					else
+						JOptionPane.showMessageDialog(null, "Discicplina já foi escolhida");
+
+				}
+			}
+		});
+	}
+	
+	void ModeloTabelaDisciplinaAdds(){
+		
+		ModelotabelaDisciplinaAdds = new TableDisciplina(listaDisciplinaAdds);
+		tblDisciplinaAdds = new JTable(ModelotabelaDisciplinaAdds);
+		scrlDisciplinaAdds = new JScrollPane(tblDisciplinaAdds);
+		scrlDisciplinaAdds.setBounds(630, 30, 500, 240);
+
+		TitledBorder title;
+		title = BorderFactory.createTitledBorder("Disciplinas escolhidas");
+		title.setTitleColor(Color.black);
+		scrlDisciplinaAdds.setBorder(title);
+		containerDisci.add(scrlDisciplinaAdds);
+		tblDisciplinaAdds.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() >= 2) {
+					numeroLinha = tblDisciplinaAdds.getSelectedRow();
+					listaDisciplinaAdds.remove(numeroLinha);
+					JOptionPane.showMessageDialog(null, "Discicplina removida");
+					containerDisci.add(scrlDisciplinaAdds);
+				}
+				
+				if(e.getClickCount()==1){
+					disciplinaAddSelecionada=true;
+					
+				}
+			}
+		});
+	}
+	
+	public Boolean percorrelistaDisciplina(int idDisciplina) {
+		for(int i=0; i<listaDisciplinaAdds.size(); i++) {
+			Disciplina x;
+			x = listaDisciplinaAdds.get(i);
+			if(x.getIdDisciplina()==idDisciplina) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	void defineJP() {
@@ -204,29 +332,31 @@ public class InterfaceGrade extends JFrame {
 		jlobrigatorio1.setVisible(false);
 		containerPrincipal.add(jlobrigatorio1);
 		
-		jlobrigatorio2 = new JLabel(campo);
+		jlobrigatorio2 = new JLabel("Selecione ao menos uma disciplina");
 		jlobrigatorio2.setForeground(Color.red);
-		jlobrigatorio2.setBounds(350, 80, 150, 20);
+		jlobrigatorio2.setBounds(30, 405, 250, 20);
 		jlobrigatorio2.setVisible(false);
 		containerPrincipal.add(jlobrigatorio2);
 	};
 
 	void defineBt() {
 		jbSalvar = new JButton("Salvar");
-		jbSalvar.setBounds(30, 250, 100, 20);
+		jbSalvar.setBounds(30, 440, 100, 20);
 		containerPrincipal.add(jbSalvar);
 
 		jbExcluir = new JButton("Excluir");
-		jbExcluir.setBounds(140, 250, 100, 20);
+		jbExcluir.setBounds(140, 440, 100, 20);
 		containerPrincipal.add(jbExcluir);
 
 		jbCancelar = new JButton("Cancelar");
-		jbCancelar.setBounds(250, 250, 100, 20);
-	containerPrincipal.add(jbCancelar);
+		jbCancelar.setBounds(250, 440, 100, 20);
+	    containerPrincipal.add(jbCancelar);
 	};
 
 	private void limpaCampos() {
 		txfNome.setText("");
+		listaDisciplinaAdds.clear();
+		containerDisci.add(scrlDisciplinaAdds);
 	}
 	
 	private void campusFalse() {
@@ -236,13 +366,25 @@ public class InterfaceGrade extends JFrame {
 		clickDuplo=false;
 	}
 	
-	 void campoValidacao(String nomeGrade) {
+	 void campoValidacao(String nomeGrade, List<Disciplina> disciplinas) {
 		
 		if(nomeGrade.isEmpty())
 			jlobrigatorio1.setVisible(true);
 		else
 			jlobrigatorio1.setVisible(false);
+		
+		if(disciplinas.isEmpty())
+			jlobrigatorio2.setVisible(true);
+		else
+			jlobrigatorio2.setVisible(false);
 	}
+	 
+	void salvalistaDisciplina(int idGrade) {
+			for(int i=0; i<listaDisciplinaAdds.size(); i++) {
+				Disciplina disciplina = listaDisciplinaAdds.get(i);
+				gradeService.salvarDisciplinaGrade(idGrade, disciplina.getIdDisciplina());
+			}
+		}
 
 	void action() {
 		jbSalvar.addActionListener(new ActionListener() {
@@ -252,7 +394,7 @@ public class InterfaceGrade extends JFrame {
 				idCurso=gradeService.idCursoParaGrade(curso);
 				
 				if(clickDuplo==true) {
-					if(!nomeGrade.isEmpty() && !curso.isEmpty()) {
+					if(!nomeGrade.isEmpty() && !curso.isEmpty() && !listaDisciplinaAdds.isEmpty()) {
 									
 						grade.setIdGrade(id);
 						grade.setNomeGrade(nomeGrade);
@@ -267,27 +409,27 @@ public class InterfaceGrade extends JFrame {
 						campusFalse();
 					}
 					else {
-						 campoValidacao(nomeGrade);
+						 campoValidacao(nomeGrade,listaDisciplinaAdds);
 					}
 				}
 				
 				else{	
-					if(!nomeGrade.isEmpty() && !curso.isEmpty()) {
+					if(!nomeGrade.isEmpty() && !curso.isEmpty() && !listaDisciplinaAdds.isEmpty()) {
 
 						grade.setNomeGrade(nomeGrade);
 						grade.setIdCurso(idCurso);
 						grade.setNomeCurso(curso);
 						
-						gradeService.salvar(grade);
+						gradeService.salvar(grade,listaDisciplinaAdds);
 						buscarTabela();
-						JOptionPane.showMessageDialog(null, "Salvo com sucesso");
+						JOptionPane.showMessageDialog(null,"Salvo com sucesso");
 						limpaCampos();
 						containerPrincipal.add(scrlGrade);
 						campusFalse();
 
 					}
 					else {
-						 campoValidacao(nomeGrade);
+						 campoValidacao(nomeGrade,listaDisciplinaAdds);
 					}
 				}
 			}
@@ -297,8 +439,7 @@ public class InterfaceGrade extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				limpaCampos();
 				campusFalse();
-				if(clickDuplo==true) 
-					clickDuplo=false;
+
 			}
 		});
 

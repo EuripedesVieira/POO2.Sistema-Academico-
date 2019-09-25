@@ -3,6 +3,7 @@ package service;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import database.DataBase;
@@ -12,15 +13,61 @@ import models.Grade;
 
 public class ServiceGrade {
 
+	
+	
+	
+	//select disciplinas_grades.idgrade, disciplinas_grades.iddisciplina, disciplinas.codigoDisciplina, disciplinas.nomeDisciplina from disciplinas_grades inner join disciplinas on disciplinas_grades.idDisciplina=disciplinas.iddisciplina;
+	//select disciplinas_grades.idgrade, grades.nomegrade,grades.idcurso,disciplinas_grades.iddisciplina, disciplinas.codigoDisciplina, disciplinas.nomeDisciplina from disciplinas_grades inner join disciplinas on disciplinas_grades.idDisciplina=disciplinas.iddisciplina inner join grades on disciplinas_grades.idgrade=grades.idgrade;
 	PreparedStatement ps;
 	
-	public void salvar(Grade grade) {
+	public void salvar(Grade grade, List<Disciplina> disciplinasAdds) {
 		
 		String command = "insert into grades (nomeGrade, idCurso) values (?,?)";
 		try {
-			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps = DataBase.retornaConexecao().prepareStatement(command,Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, grade.getNomeGrade());
 			ps.setInt(2, grade.getIdCurso());
+			ps.executeUpdate();
+
+			ResultSet rsKey = ps.getGeneratedKeys();
+			int insertKey = 0;
+
+			if(rsKey.next()) {
+			    insertKey = rsKey.getInt(1);
+			    
+				command = "insert into disciplinas_grades (idGrade, idDisciplina) values (?,?)";
+				try {
+					ps = DataBase.retornaConexecao().prepareStatement(command);
+					
+					for(int i=0; i<disciplinasAdds.size(); i++) {
+						Disciplina disciplina; 
+						disciplina = disciplinasAdds.get(i);
+						ps.setInt(1, insertKey);
+						ps.setInt(2, disciplina.getIdDisciplina());
+						ps.executeUpdate();
+
+					}
+				}
+				catch (SQLException e) {
+					e.printStackTrace();
+				}
+			    
+			}
+
+			
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void salvarDisciplinaGrade(int idGrade, int idDisciplina) {
+		
+		String command = "insert into disciplinas_grades (idGrade, idDisciplina) values (?,?)";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps.setInt(1, idGrade);
+			ps.setInt(2, idDisciplina);
 			ps.executeUpdate();
 		}
 		catch (SQLException e) {
@@ -162,28 +209,8 @@ public class ServiceGrade {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+	
 	}
-/*
-	public static int idCursoParaGrade (String curso) {
-		String command ="select *from cursos";
-		try {
-			ps = DataBase.retornaConexecao().prepareStatement(command);
-			ResultSet result = ps.executeQuery();
-						
-			while(result.next()) {
-				int idCurso = result.getInt(1);
-				String nomeCurso = result.getString(2);
-				nomeCurso = nomeCurso.replace(" ","");
-				if(nomeCurso==curso)
-					return idCurso;
-			}	
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
-*/
 	
 	public int idCursoParaGrade (String curso) {
 		String command ="select *from cursos";
@@ -244,6 +271,35 @@ public class ServiceGrade {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	
+	public void buscarDisciplinasSelecionadas(List<Disciplina>disciplinasSelecionadas, int idGradeSelecionada){
+		String command = "select disciplinas_grades.idgrade, disciplinas_grades.iddisciplina, disciplinas.codigoDisciplina, disciplinas.nomeDisciplina from disciplinas_grades inner join disciplinas on disciplinas_grades.idDisciplina=disciplinas.iddisciplina";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ResultSet resutl = ps.executeQuery();
+			
+			while(resutl.next()) {
+				int idGrade = resutl.getInt(1);
+				int idDisciplina =  resutl.getInt(2);
+				String codigoDisciplina = resutl.getString(3);
+				String nomeDisciplina = resutl.getString(4);
+				
+				if(idGrade!=idGradeSelecionada)
+					continue;
+				
+				Disciplina disciplina = new Disciplina();
+				disciplina.setIdDisciplina(idDisciplina);
+				disciplina.setCodigoDisciplina(codigoDisciplina);
+				disciplina.setNomeDisciplina(nomeDisciplina);
+				disciplinasSelecionadas.add(disciplina);	
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 	}
 }
 

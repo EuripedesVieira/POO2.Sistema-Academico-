@@ -9,7 +9,7 @@ public class TableDisciplina  extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 	private List<Disciplina> disciplinas = new ArrayList<Disciplina>();
-	String[] cabecalho = {"id","Código","Nome"};
+	String[] cabecalho = {"Código","Disciplina"};
 	
 	public TableDisciplina (List<Disciplina> disciplinas) {
 		this.disciplinas = disciplinas;
@@ -29,9 +29,8 @@ public class TableDisciplina  extends AbstractTableModel {
 
 	public Object getValueAt(int linha, int coluna) {
 		switch (coluna) {
-			case 0: return disciplinas.get(linha).getIdDisciplina();
-			case 1: return disciplinas.get(linha).getCodigoDisciplina();
-			case 2: return disciplinas.get(linha).getNomeDisciplina();
+			case 0: return disciplinas.get(linha).getCodigoDisciplina();
+			case 1: return disciplinas.get(linha).getNomeDisciplina();
 			default: return null;
 		}
 	}
