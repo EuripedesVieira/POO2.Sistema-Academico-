@@ -51,7 +51,6 @@ public class InterfacePessoa extends JFrame {
 	private JTextField txfNome;
 	private JTextField txfCpf;
 	private JTextField txfSexo;
-	private JTextField txfDataNascimento;
 	private JTextField txfLogradouro;
 	private JTextField txfBairro;
 	private JTextField txfCep;
@@ -107,7 +106,7 @@ public class InterfacePessoa extends JFrame {
 	private int id;
 	
 	private boolean click_duplo = false; 
-	
+		
 	Pessoa pessoa = new Pessoa();
 	DataBase database = new DataBase();
 	ServicePessoa pessoaService = new ServicePessoa();
@@ -210,7 +209,7 @@ public class InterfacePessoa extends JFrame {
 		txfCpf.setBounds(350, 50, 300, 30);
 		//containerPrincipal.add(txfCpf);
 		
-		txfDataNascimento = new JTextField();
+		//txfDataNascimento = new JTextField();
 		//txfDataNascimento.setBounds(840, 50, 300, 30);
 		
 		//DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
@@ -356,8 +355,6 @@ public class InterfacePessoa extends JFrame {
 		containerPrincipal.add(jcSexo);
 
 		municipios = new JComboBox<String>();
-	
-
 		municipios.setBounds(480, 210, 200, 30);
 		containerPrincipal.add(municipios);
 	};
@@ -492,7 +489,6 @@ public class InterfacePessoa extends JFrame {
 				try {
 					dataConvertida = pessoaService.dataParaSalvar(data);
 				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			 
@@ -547,7 +543,7 @@ public class InterfacePessoa extends JFrame {
 						pessoa.setEmail(email);
 						pessoa.setIdMunicipio(idMunucipio);
 						
-						pessoaService.salvar(pessoa);
+					//	pessoaService.salvar(pessoa);
 						buscarTabela();
 						JOptionPane.showMessageDialog(null, "Salvo com sucesso");
 						limpaCampos();

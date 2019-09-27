@@ -32,8 +32,8 @@ public class ServicePessoa {
 			ps.setString(9, pessoa.getEmail());
 			ps.setInt(10, pessoa.getIdMunicipio());
 			ps.setString(11, pessoa.getBairro());
-
 			ps.executeUpdate();
+					
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

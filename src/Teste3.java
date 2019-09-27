@@ -9,6 +9,7 @@ import javax.swing.border.LineBorder;
 
 public class Teste3 extends JFrame {
 	
+	private static final long serialVersionUID = 1L;
 	private JPanel conPrincipal;
 	private JPanel cont1;
 	private JPanel cont2;
@@ -18,7 +19,6 @@ public class Teste3 extends JFrame {
 	
 	private JButton but1;
 	private JButton but2;
-	private JButton but3;
 	
 	
 	public Teste3() {

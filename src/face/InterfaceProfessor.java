@@ -1,8 +1,13 @@
 package face;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.sql.Date;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -10,10 +15,20 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
+
+import database.DataBase;
+import modelTable.TableProfessor;
+import models.Municipio;
+import models.Pessoa;
+import models.Professor;
+import service.ServiceProfessor;
 
 public class InterfaceProfessor extends JFrame {
 
@@ -29,9 +44,6 @@ public class InterfaceProfessor extends JFrame {
 	private JTextField txfEmail;
 	private JTextField txfMatricula;
 	private JTextField txfFormacao;
-	
-
-	
 	
 	private JLabel jlNome;
 	private JLabel jlCodigo;
@@ -56,19 +68,36 @@ public class InterfaceProfessor extends JFrame {
 	private JLabel jlobrigatorioLogra;
 	private JLabel jlobrigatorioBairro;
 	private JLabel jlobrigatorioCep;
+	private JLabel jlobrigatorioCodigoMatricula;
+	private JLabel jlobrigatorioDataMatricula;
+	private JLabel jlobrigatorioFormacao;
 	
-	private String campo = "Campo obrigatório";
+	private String campo = "Campo obrigatório";	
 	
+	private Date dataConvertida;
+	private Date dataMatriculaConvertida;
+	private String nome;
+	private String cpf;
+	private String sexo;
+	private String logradouro;
+	private String bairro;
+	private String cep;
+	private String numero;
+	private String complemento;
+	private String email;
+	private String nomeMunicipio;
+	private int idMunucipio;
+	private String codigoMatricula;
+	private String formacao;
+
 	private MaskFormatter mascaraCpf = null;
 	private  MaskFormatter mascaraData= null;
 	private MaskFormatter mascaraCep = null;
-	
 
 	private JFormattedTextField jFormattedTextCpf;
 	private JFormattedTextField jFormattedTextData;
 	private JFormattedTextField jFormattedTextCep;
 	private JFormattedTextField jFormattedTextDataMatricula;
-
 	
 	private JButton jbSalvar;
 	private JButton jbExcluir;
@@ -76,6 +105,21 @@ public class InterfaceProfessor extends JFrame {
 		
 	private JComboBox<String> jcSexo;
 	private JComboBox<String> municipios;
+	
+	private List<Professor> listaProfessores = new ArrayList<Professor>();
+	private List<Municipio> listaMunucipios = new ArrayList<Municipio>();
+	
+	private TableProfessor ModelotabelaProfessor;
+	private JTable tblProfessor;
+	private JScrollPane scrlProfessor;
+	
+	Pessoa pessoa = new Pessoa();
+	Professor professor = new Professor();
+	DataBase database = new DataBase();
+	ServiceProfessor professorService = new ServiceProfessor();
+	
+	private boolean clickDuplo = false; 
+
 	
 	private static final long serialVersionUID = 1L;
 
@@ -85,11 +129,17 @@ public class InterfaceProfessor extends JFrame {
 	}
 	
 	private void iniciaInterface() throws IOException{
+		
 		defineJP();
 		defineMask();
+		buscarTabela();
 		containerPessoas();
+		percorreListaMunicipio();
 		containerProfessores();
 		defineLb();
+		defineBt();
+		acoesBottons();
+		modeloTabelaProfessor();
 		setVisible(true);
 	}
 	
@@ -101,21 +151,19 @@ public class InterfaceProfessor extends JFrame {
 		containerPrincipal.setLayout(null);
 		this.add(containerPrincipal);
 	};
-	
-	
+
 	void containerPessoas() {
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder("Dados pessoais");
 		title.setTitleColor(Color.black);
 	
 		containerDadosPessoais = new JPanel();
-		containerDadosPessoais.setBounds(30, 10, 1245, 260);
+		containerDadosPessoais.setBounds(30, 10, 1245, 210);
 		containerDadosPessoais.setBorder(title);
 		containerPrincipal.add(containerDadosPessoais);
 		containerDadosPessoais.setLayout(null);
 		containerDadosPessoais.setVisible(true);
-		
-		
+
 		txfNome = new JTextField();
 		txfNome.setBounds(30, 50, 300, 30);
 		containerDadosPessoais.add(txfNome);
@@ -124,7 +172,6 @@ public class InterfaceProfessor extends JFrame {
        jFormattedTextCpf.setBounds(350, 50, 150, 30);
        containerDadosPessoais.add(jFormattedTextCpf);
 		
-
 	    jFormattedTextData = new JFormattedTextField(mascaraData);
 	    jFormattedTextData.setBounds(690, 50, 150, 30);
 	    containerDadosPessoais.add(jFormattedTextData);
@@ -134,23 +181,23 @@ public class InterfaceProfessor extends JFrame {
 		containerDadosPessoais.add(txfEmail);
 		
 		txfLogradouro = new JTextField();
-		txfLogradouro.setBounds(480, 130, 200, 30);
+		txfLogradouro.setBounds(30, 130, 200, 30);
 		containerDadosPessoais.add(txfLogradouro);		
 
 		txfBairro = new JTextField();
-		txfBairro.setBounds(700, 130, 150, 30);
+		txfBairro.setBounds(250, 130, 150, 30);
 		containerDadosPessoais.add(txfBairro);	
 		
 	    jFormattedTextCep = new JFormattedTextField(mascaraCep);
-		jFormattedTextCep.setBounds(870, 130, 150, 30);
+		jFormattedTextCep.setBounds(420, 130, 150, 30);
 		containerDadosPessoais.add(jFormattedTextCep);
 		
 		txfNumero = new JTextField();
-		txfNumero.setBounds(1040, 130, 100, 30);
+		txfNumero.setBounds(590, 130, 100, 30);
 		containerDadosPessoais.add(txfNumero);
 		
 		txfComplemento = new JTextField();
-		txfComplemento.setBounds(30, 210, 430, 30);
+		txfComplemento.setBounds(710, 130, 285, 30);
 		containerDadosPessoais.add(txfComplemento);
 		
 		jcSexo = new JComboBox<String>();
@@ -160,7 +207,7 @@ public class InterfaceProfessor extends JFrame {
 		containerDadosPessoais.add(jcSexo);
 
 		municipios = new JComboBox<String>();
-		municipios.setBounds(480, 210, 200, 30);
+		municipios.setBounds(1015, 130, 200, 30);
 		containerDadosPessoais.add(municipios);
 	}
 	
@@ -170,7 +217,7 @@ public class InterfaceProfessor extends JFrame {
 		title.setTitleColor(Color.black);
 	
 		containerDadosProfessores = new JPanel();
-		containerDadosProfessores.setBounds(30, 280, 1245, 130);
+		containerDadosProfessores.setBounds(30, 230, 1245, 130);
 		containerDadosProfessores.setBorder(title);
 		containerPrincipal.add(containerDadosProfessores);
 		containerDadosProfessores.setLayout(null);
@@ -192,18 +239,33 @@ public class InterfaceProfessor extends JFrame {
 		jlMatricula.setBounds(30, 30, 150, 20);
 		containerDadosProfessores.add(jlMatricula);
 		
-		jlDataMatricula = new JLabel("Data");
-		jlDataMatricula.setBounds(350, 30, 100, 20);
+		jlDataMatricula = new JLabel("Data da Matricula");
+		jlDataMatricula.setBounds(350, 30, 150, 20);
 		containerDadosProfessores.add(jlDataMatricula);
 		
 		jlFormacao = new JLabel("Formação");
 		jlFormacao.setBounds(520, 30, 100, 20);
 		containerDadosProfessores.add(jlFormacao);
 		
-		}
-	
-	
-	
+		jlobrigatorioCodigoMatricula = new JLabel(campo);
+		jlobrigatorioCodigoMatricula.setForeground(Color.red);
+		jlobrigatorioCodigoMatricula.setBounds(30, 80, 150, 20);
+		jlobrigatorioCodigoMatricula.setVisible(false);
+		containerDadosProfessores.add(jlobrigatorioCodigoMatricula);
+		
+		jlobrigatorioDataMatricula = new JLabel(campo);
+		jlobrigatorioDataMatricula.setForeground(Color.red);
+		jlobrigatorioDataMatricula.setBounds(350, 80, 150, 20);
+		jlobrigatorioDataMatricula.setVisible(false);
+		containerDadosProfessores.add(jlobrigatorioDataMatricula);
+		
+		jlobrigatorioFormacao= new JLabel(campo);
+		jlobrigatorioFormacao.setForeground(Color.red);
+		jlobrigatorioFormacao.setBounds(520, 80, 150, 20);
+		jlobrigatorioFormacao.setVisible(false);
+		containerDadosProfessores.add(jlobrigatorioFormacao);
+	}
+
 	void defineLb() {
 
 		jlNome = new JLabel("Nome");
@@ -223,76 +285,90 @@ public class InterfaceProfessor extends JFrame {
 		containerDadosPessoais.add(jlDataNascimento);
 		
 		jlEmail = new JLabel("Email");
-		jlEmail.setBounds(30, 110, 150, 20);
+		jlEmail.setBounds(860, 30, 150, 20);
 		containerDadosPessoais.add(jlEmail);
 
 		jlLogradouro = new JLabel("Longradouro");
-		jlLogradouro.setBounds(480, 110, 150, 20);
+		jlLogradouro.setBounds(30, 110, 150, 20);
 		containerDadosPessoais.add(jlLogradouro);
 
 		jlBairro = new JLabel("Bairro");
-		jlBairro.setBounds(700, 110, 100, 20);
+		jlBairro.setBounds(250, 110, 100, 20);
 		containerDadosPessoais.add(jlBairro);
 		
 		jlCep = new JLabel("Cep");
-		jlCep.setBounds(870, 110, 100, 20);
+		jlCep.setBounds(420, 110, 100, 20);
 		containerDadosPessoais.add(jlCep);
 		
 		jlNumero = new JLabel("Numero");
-		jlNumero.setBounds(1040, 110, 100, 20);
+		jlNumero.setBounds(590, 110, 100, 20);
 		containerDadosPessoais.add(jlNumero);
 		
 		jlComplemento = new JLabel("Complemento");
-		jlComplemento.setBounds(30, 190, 100, 20);
+		jlComplemento.setBounds(710, 110, 100, 20);
 		containerDadosPessoais.add(jlComplemento);
 
 		jlMunicipio = new JLabel("Municipio");
-		jlMunicipio.setBounds(480, 190, 100, 20);
+		jlMunicipio.setBounds(1015, 110, 100, 20);
 		containerDadosPessoais.add(jlMunicipio);
 		
 		jlobrigatorio1 = new JLabel(campo);
 		jlobrigatorio1.setForeground(Color.red);
 		jlobrigatorio1.setBounds(30, 80, 150, 20);
-		jlobrigatorio1.setVisible(true);
+		jlobrigatorio1.setVisible(false);
 		containerDadosPessoais.add(jlobrigatorio1);
 		
 		jlobrigatorio2 = new JLabel(campo);
 		jlobrigatorio2.setForeground(Color.red);
 		jlobrigatorio2.setBounds(350, 80, 300, 20);
-		jlobrigatorio2.setVisible(true);
+		jlobrigatorio2.setVisible(false);
 		containerDadosPessoais.add(jlobrigatorio2);
 	
 	
 		jlobrigatorioData = new JLabel(campo);
 		jlobrigatorioData.setForeground(Color.red);
-		jlobrigatorioData.setBounds(840, 80, 300, 20);
+		jlobrigatorioData.setBounds(690, 80, 300, 20);
 		jlobrigatorioData.setVisible(false);
 		containerDadosPessoais.add(jlobrigatorioData);
 		
 		jlobrigatorioEmail = new JLabel(campo);
 		jlobrigatorioEmail.setForeground(Color.red);
-		jlobrigatorioEmail.setBounds(30, 160, 300, 20);
+		jlobrigatorioEmail.setBounds(860, 80, 300, 20);
 		jlobrigatorioEmail.setVisible(false);
 		containerDadosPessoais.add(jlobrigatorioEmail);
 		
 		jlobrigatorioLogra = new JLabel(campo);
 		jlobrigatorioLogra.setForeground(Color.red);
-		jlobrigatorioLogra.setBounds(480, 160, 300, 20);
+		jlobrigatorioLogra.setBounds(30, 160, 300, 20);
 		jlobrigatorioLogra.setVisible(false);
 		containerDadosPessoais.add(jlobrigatorioLogra);
 		
 		jlobrigatorioBairro = new JLabel(campo);
 		jlobrigatorioBairro.setForeground(Color.red);
-		jlobrigatorioBairro.setBounds(700, 160, 300, 20);
+		jlobrigatorioBairro.setBounds(250,160, 150, 20);
 		jlobrigatorioBairro.setVisible(false);
 		containerDadosPessoais.add(jlobrigatorioBairro);
 		
 		jlobrigatorioCep = new JLabel(campo);
 		jlobrigatorioCep.setForeground(Color.red);
-		jlobrigatorioCep.setBounds(870, 160, 300, 20);
+		jlobrigatorioCep.setBounds(420, 160, 150, 20);
 		jlobrigatorioCep.setVisible(false);
 		containerDadosPessoais.add(jlobrigatorioCep);
 	};
+	
+	void modeloTabelaProfessor() {
+		TitledBorder title;
+		title = BorderFactory.createTitledBorder("Pessoas");
+		title.setTitleColor(Color.black);
+		
+		ModelotabelaProfessor = new TableProfessor(listaProfessores);
+		tblProfessor = new JTable(ModelotabelaProfessor);
+		scrlProfessor = new JScrollPane(tblProfessor);
+		scrlProfessor.setBorder(title);
+		scrlProfessor.setBounds(30, 420, 1245, 200);
+		containerPrincipal.add(scrlProfessor);
+	}
+	
 	
 	void defineMask() {
 		 try {
@@ -310,21 +386,220 @@ public class InterfaceProfessor extends JFrame {
 	
 	void defineBt() {
 		jbSalvar = new JButton("Salvar");
-		jbSalvar.setBounds(30, 350, 100, 20);
+		jbSalvar.setBounds(30, 380, 100, 20);
 		containerPrincipal.add(jbSalvar);
 
 		jbExcluir = new JButton("Excluir");
-		jbExcluir.setBounds(140, 350, 100, 20);
+		jbExcluir.setBounds(140, 380, 100, 20);
 		containerPrincipal.add(jbExcluir);
 
 		jbCancelar = new JButton("Cancelar");
-		jbCancelar.setBounds(250, 350, 100, 20);
+		jbCancelar.setBounds(250, 380, 100, 20);
 		containerPrincipal.add(jbCancelar);
 	};
 	
+	void acoesBottons() {
+		jbSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			
+				int contdata = isInteger(jFormattedTextData.getText());
+				int contcpf = isInteger(jFormattedTextCpf.getText());
+				int contcep = isInteger(jFormattedTextCep.getText());
+				int contDataMatricula = isInteger(jFormattedTextDataMatricula.getText());
+				
+				nome = txfNome.getText();
+				cpf = jFormattedTextCpf.getText();
+				sexo = (String) jcSexo.getSelectedItem();
+				email = txfEmail.getText();
+				logradouro = txfLogradouro.getText();
+				bairro = txfBairro.getText();
+				cep = jFormattedTextCep.getText();
+				numero = txfNumero.getText();
+				complemento = txfComplemento.getText();
+				nomeMunicipio = (String) municipios.getSelectedItem();
+				idMunucipio=professorService.salvarIdMunicipio(nomeMunicipio);
+				
+				codigoMatricula = txfMatricula.getText();
+				formacao = txfFormacao.getText();
+				
+				if(contdata==8 && contDataMatricula==8) {
+					String dataNascimento = jFormattedTextData.getText();
+					String dataMatricula = jFormattedTextDataMatricula.getText();
+					try {
+						dataConvertida = professorService.dataParaSalvar(dataNascimento);
+						dataMatriculaConvertida = professorService.dataParaSalvar(dataMatricula);
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+				}
+				
+				
+				if(contcpf==11 && !nome.isEmpty() && !sexo.isEmpty() && contdata == 8
+				   && !logradouro.isEmpty() && !bairro.isEmpty() && contcep == 8 && !email.isEmpty()
+				   && !codigoMatricula.isEmpty() && contDataMatricula==8 && !formacao.isEmpty()) {
+			
+					carregaObjetoPessoa();
+					CarregaObjetoProfessor();
 	
-	public static void main(String[] args) throws IOException {
-		new InterfaceProfessor();
+					if(clickDuplo==true) {
+						//pessoaService.atualizar(pessoa);
+						JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
+					}	
+					else{
+						if(professorService.salvar(pessoa, professor))
+							JOptionPane.showMessageDialog(null, "Salvo com sucesso");
+						else 
+							JOptionPane.showMessageDialog(null, "Erro ao salvar");
+						
+					}
+				
+					buscarTabela();
+					containerPrincipal.add(scrlProfessor);
+					campusFalse();
+				}
+				else {
+					campoValidacao(nome,contcpf,contdata,email,logradouro,bairro,contcep,codigoMatricula,contDataMatricula,formacao);
+				}
+			}
+		});
 		
+		jbCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				campusFalse();
+			}
+		});
+	}
+	
+	
+	void carregaObjetoPessoa() {
+		pessoa.setCpf(cpf);
+		pessoa.setNome(nome);
+		pessoa.setSexo(sexo);
+		pessoa.setDataNascimento(dataConvertida);
+		pessoa.setLogradouro(logradouro);
+		pessoa.setLogradouro(bairro);
+		pessoa.setCep(cep);
+		pessoa.setNumero(numero);
+		pessoa.setComplemento(complemento);
+		pessoa.setEmail(email);
+		pessoa.setIdMunicipio(idMunucipio);
+	}
+	
+	void CarregaObjetoProfessor() {
+		professor.setMatriculaProfessor(codigoMatricula);
+		professor.setDataMatricula(dataMatriculaConvertida);
+		professor.setFormacao(formacao);
+	}
+	
+	void percorreListaMunicipio() {
+		professorService.buscarMunicipio(listaMunucipios);
+		for(int i=0; i<listaMunucipios.size(); i++) {
+			Municipio municipio;
+			municipio= listaMunucipios.get(i);
+			String muni =  municipio.getNomeMunicipio();
+			municipios.addItem(muni);
+		}
+	}
+	
+	 int isInteger(String text) {
+		 int cont = 0;
+		 for(int i=0; i<text.length(); i++) {
+			 if(Character.isDigit(text.charAt(i))) {
+				 cont++;
+			 }
+		 }
+		 return cont;
+	 }
+	 
+	 void campoValidacao(String nome, int cpf, int data, String email, String logra, String bairro, int cep, String codigoMatricula, int contDataMatricula, String formacao) {
+			
+			if(nome.isEmpty())
+				jlobrigatorio1.setVisible(true);
+			else
+				jlobrigatorio1.setVisible(false);
+			
+			if(cpf!=11)
+				jlobrigatorio2.setVisible(true);
+			else
+				jlobrigatorio2.setVisible(false);
+			
+			if(data != 8)
+				jlobrigatorioData.setVisible(true);
+			else
+				jlobrigatorioData.setVisible(false);
+			
+			if(email.isEmpty())
+				jlobrigatorioEmail.setVisible(true);
+			else
+				jlobrigatorioEmail.setVisible(false);
+			
+			if(logra.isEmpty())
+				jlobrigatorioLogra.setVisible(true);
+			else
+				jlobrigatorioLogra.setVisible(false);
+			
+			if(bairro.isEmpty())
+				jlobrigatorioBairro.setVisible(true);
+			else
+				jlobrigatorioBairro.setVisible(false);
+		 
+			if(cep != 8)
+				jlobrigatorioCep.setVisible(true);
+			else
+				jlobrigatorioCep.setVisible(false);
+			
+			if(codigoMatricula.isEmpty())
+				jlobrigatorioCodigoMatricula.setVisible(true);
+			else
+				jlobrigatorioCodigoMatricula.setVisible(false);
+		 
+			if(contDataMatricula != 8)
+				jlobrigatorioDataMatricula.setVisible(true);
+			else
+				jlobrigatorioDataMatricula.setVisible(false);
+			
+			if(formacao.isEmpty())
+				jlobrigatorioFormacao.setVisible(true);
+			else
+				jlobrigatorioFormacao.setVisible(false);
+		 }
+		
+		private void campusFalse() {
+			jlobrigatorio1.setVisible(false);
+			jlobrigatorio2.setVisible(false);
+			jlobrigatorioData.setVisible(false);
+			jlobrigatorioEmail.setVisible(false);
+			jlobrigatorioLogra.setVisible(false);
+			jlobrigatorioBairro.setVisible(false);
+			jlobrigatorioCep.setVisible(false);
+			jlobrigatorioCodigoMatricula.setVisible(false);
+			jlobrigatorioDataMatricula.setVisible(false);
+			jlobrigatorioFormacao.setVisible(false);
+			
+			txfNome.setText("");
+			jFormattedTextCpf.setText("");
+			jFormattedTextData.setText("");
+			txfEmail.setText("");
+			txfLogradouro.setText("");
+			txfBairro.setText("");
+			jFormattedTextCep.setText("");
+			txfNumero.setText("");
+			txfComplemento.setText("");
+			txfMatricula.setText("");
+			txfFormacao.setText("");
+			jFormattedTextDataMatricula.setText("");
+			
+			clickDuplo=false;
+			txfNome.requestFocus();
+		
+		}
+		
+	void buscarTabela(){	
+		listaProfessores.clear();
+		professorService.buscarProfessores(listaProfessores);
+	}
+
+	public static void main(String[] args) throws IOException {
+		new InterfaceProfessor();		
 	}
 }

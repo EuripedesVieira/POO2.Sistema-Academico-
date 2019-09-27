@@ -1,5 +1,7 @@
 package models;
 
+import java.sql.Date;
+
 public class Professor {
 
 	private int idProfessor;
@@ -7,6 +9,7 @@ public class Professor {
 	private String formacao;
 	private String nomeProfessor;
 	private String cpfProfessor;
+	private Date dataMatricula;
 	
 	public int getIdProfessor() {
 		return idProfessor;
@@ -38,8 +41,12 @@ public class Professor {
 	public void setCpfProfessor(String cpfProfessor) {
 		this.cpfProfessor = cpfProfessor;
 	}
-	
-	
+	public Date getDataMatricula() {
+		return dataMatricula;
+	}
+	public void setDataMatricula(Date dataMatricula) {
+		this.dataMatricula = dataMatricula;
+	}
 }
 	
 
