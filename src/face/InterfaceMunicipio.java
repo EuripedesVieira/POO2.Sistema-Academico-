@@ -81,7 +81,11 @@ public class InterfaceMunicipio extends JFrame {
 	
 	void buscarTabela(){
 		listaMunicipio.clear();
-		municipioService.buscar(listaMunicipio);
+		try {
+			municipioService.buscar(listaMunicipio);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
 	}
 
 	
@@ -232,46 +236,36 @@ public class InterfaceMunicipio extends JFrame {
 	void action() {
 		jbSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				nomeMunicipio = txfNome.getText();
+				nomeMunicipio = txfNome.getText().trim();
 				uf = (String) ufs.getSelectedItem();
+
+				municipio.setNomeMunicipio(nomeMunicipio);
+				municipio.setUf(uf);
 				
-				if(click_duplo==true) {
-					if(!nomeMunicipio.isEmpty() && !uf.isEmpty()) {
-						
+				if(!nomeMunicipio.isEmpty() && !uf.isEmpty()) {
+					if(click_duplo==true){
 						municipio.setIdMunicipio(id);
-						municipio.setNomeMunicipio(nomeMunicipio);
-						municipio.setUf(uf);
-						
-						municipioService.atualizar(municipio);
-						buscarTabela();
-						JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
-						limpaCampos();
-						containerPrincipal.add(scrlMunicipio);
-						campusFalse();
-						txfNome.requestFocus();
-						click_duplo=false;
+						try {
+							municipioService.atualizar(municipio);
+							atualizarPainel();
+							JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
+
+						} catch (Exception e1){
+							JOptionPane.showMessageDialog(null, e1.getMessage());
+						}
 					}
-					else {
-						 campoValidacao(nomeMunicipio,uf);
+					else{	
+						try {
+							municipioService.salvar(municipio);
+							JOptionPane.showMessageDialog(null, "Salvo com sucesso");
+							atualizarPainel();
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage());
+						}
 					}
 				}
-				
-				else{	
-					if(!nomeMunicipio.isEmpty() && !uf.isEmpty()) {
-						municipio.setNomeMunicipio(nomeMunicipio);
-						municipio.setUf(uf);
-						municipioService.salvar(municipio);
-						buscarTabela();
-						JOptionPane.showMessageDialog(null, "Salvo com sucesso");
-						limpaCampos();
-						containerPrincipal.add(scrlMunicipio);
-						campusFalse();
-						txfNome.requestFocus();
-						click_duplo=false;
-					}
-					else {
-						 campoValidacao(nomeMunicipio,uf);
-					}
+				else {
+					 campoValidacao(nomeMunicipio,uf);
 				}
 			}
 		});
@@ -288,14 +282,13 @@ public class InterfaceMunicipio extends JFrame {
 		jbExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(click_duplo==true){
-					municipioService.deletar(id);
-					buscarTabela();
-					JOptionPane.showMessageDialog(null, "Deletado com sucesso");
-					containerPrincipal.add(scrlMunicipio);
-					click_duplo=false;
-					limpaCampos();
-					txfNome.requestFocus();
-					campusFalse();
+					try {
+						municipioService.deletar(id);
+						atualizarPainel();
+						JOptionPane.showMessageDialog(null, "Deletado com sucesso");
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage());
+					}
 				}
 				limpaCampos();
 				campusFalse();
@@ -303,6 +296,16 @@ public class InterfaceMunicipio extends JFrame {
 			}
 		});
 	};
+	
+	void atualizarPainel() {
+		buscarTabela();
+		containerPrincipal.add(scrlMunicipio);
+		click_duplo=false;
+		limpaCampos();
+		txfNome.requestFocus();
+		campusFalse();
+	}
+	
 	public static void main(String[] args) throws IOException{
 		new InterfaceMunicipio();		
 	};

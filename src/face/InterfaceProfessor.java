@@ -3,6 +3,8 @@ package face;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.ParseException;
@@ -89,6 +91,9 @@ public class InterfaceProfessor extends JFrame {
 	private int idMunucipio;
 	private String codigoMatricula;
 	private String formacao;
+	private Date dataNascimento;
+	private int idPessoa;
+	private int idProfessor;
 
 	private MaskFormatter mascaraCpf = null;
 	private  MaskFormatter mascaraData= null;
@@ -130,8 +135,8 @@ public class InterfaceProfessor extends JFrame {
 	
 	private void iniciaInterface() throws IOException{
 		
-		defineJP();
 		defineMask();
+		defineJP();
 		buscarTabela();
 		containerPessoas();
 		percorreListaMunicipio();
@@ -283,7 +288,7 @@ public class InterfaceProfessor extends JFrame {
 		jlDataNascimento = new JLabel("Data Nascimento");
 		jlDataNascimento.setBounds(690, 30, 150, 20);
 		containerDadosPessoais.add(jlDataNascimento);
-		
+
 		jlEmail = new JLabel("Email");
 		jlEmail.setBounds(860, 30, 150, 20);
 		containerDadosPessoais.add(jlEmail);
@@ -323,7 +328,6 @@ public class InterfaceProfessor extends JFrame {
 		jlobrigatorio2.setBounds(350, 80, 300, 20);
 		jlobrigatorio2.setVisible(false);
 		containerDadosPessoais.add(jlobrigatorio2);
-	
 	
 		jlobrigatorioData = new JLabel(campo);
 		jlobrigatorioData.setForeground(Color.red);
@@ -367,6 +371,67 @@ public class InterfaceProfessor extends JFrame {
 		scrlProfessor.setBorder(title);
 		scrlProfessor.setBounds(30, 420, 1245, 200);
 		containerPrincipal.add(scrlProfessor);
+		tblProfessor.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount()>=2) {
+					int numeroLinha = tblProfessor.getSelectedRow();
+					Professor dados = listaProfessores.get(numeroLinha);
+					idProfessor = dados.getIdProfessor();
+					idPessoa = professorService.buscarIdPessoa(idProfessor);
+					professorService.buscarPessoa(pessoa, idPessoa);
+					
+					
+					idPessoa = pessoa.getIdPessoa();
+					idMunucipio = pessoa.getIdMunicipio();
+					cpf = pessoa.getCpf();
+					nome = pessoa.getNome();
+					sexo = pessoa.getSexo();
+					dataNascimento = pessoa.getDataNascimento();
+					logradouro = pessoa.getLogradouro();
+					bairro =pessoa.getBairro();
+					cep = pessoa.getCep();
+					numero = pessoa.getNumero();
+					complemento = pessoa.getComplemento();
+					email = pessoa.getEmail();
+					System.out.println(logradouro);
+					numero = pessoa.getNumero();
+					complemento = pessoa.getComplemento();
+					String dataNascimentoParaMostrar;
+					String dataMatriculaParaMostrar;
+					
+					try {
+						dataNascimentoParaMostrar = professorService.dataParaMostar(dataNascimento);
+						dataMatriculaParaMostrar = professorService.dataParaMostar(dataNascimento);
+						jFormattedTextData.setText(dataNascimentoParaMostrar);
+						jFormattedTextDataMatricula.setText(dataMatriculaParaMostrar);
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
+				
+					txfNome.setText(nome);
+					jFormattedTextCpf.setText(cpf);
+					jcSexo.setSelectedItem(sexo);
+					txfLogradouro.setText(logradouro);
+					txfBairro.setText(bairro);
+					jFormattedTextCep.setText(cep);
+					txfNumero.setText(numero);
+					txfComplemento.setText(complemento);
+					txfEmail.setText(email);
+					txfLogradouro.setText(logradouro);
+					txfNumero.setText(numero);
+					txfComplemento.setText(complemento);
+					
+					
+					txfFormacao.setText(dados.getFormacao());
+					txfMatricula.setText(dados.getMatriculaProfessor());
+					clickDuplo=true;
+					
+					
+				}
+			}
+		});
 	}
 	
 	
@@ -407,20 +472,20 @@ public class InterfaceProfessor extends JFrame {
 				int contcep = isInteger(jFormattedTextCep.getText());
 				int contDataMatricula = isInteger(jFormattedTextDataMatricula.getText());
 				
-				nome = txfNome.getText();
+				nome = txfNome.getText().trim();
 				cpf = jFormattedTextCpf.getText();
 				sexo = (String) jcSexo.getSelectedItem();
-				email = txfEmail.getText();
-				logradouro = txfLogradouro.getText();
-				bairro = txfBairro.getText();
+				email = txfEmail.getText().trim();
+				logradouro = txfLogradouro.getText().trim();
+				bairro = txfBairro.getText().trim();
 				cep = jFormattedTextCep.getText();
 				numero = txfNumero.getText();
 				complemento = txfComplemento.getText();
 				nomeMunicipio = (String) municipios.getSelectedItem();
 				idMunucipio=professorService.salvarIdMunicipio(nomeMunicipio);
 				
-				codigoMatricula = txfMatricula.getText();
-				formacao = txfFormacao.getText();
+				codigoMatricula = txfMatricula.getText().trim();
+				formacao = txfFormacao.getText().trim();
 				
 				if(contdata==8 && contDataMatricula==8) {
 					String dataNascimento = jFormattedTextData.getText();
@@ -442,15 +507,19 @@ public class InterfaceProfessor extends JFrame {
 					CarregaObjetoProfessor();
 	
 					if(clickDuplo==true) {
-						//pessoaService.atualizar(pessoa);
+						professor.setIdProfessor(idProfessor);
+						System.out.println(pessoa.getIdPessoa());
+						System.out.println(professor.getIdProfessor());
+						professorService.atualizar(pessoa,professor);
 						JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
 					}	
 					else{
-						if(professorService.salvar(pessoa, professor))
+						try {
+							professorService.salvar(pessoa, professor);
 							JOptionPane.showMessageDialog(null, "Salvo com sucesso");
-						else 
-							JOptionPane.showMessageDialog(null, "Erro ao salvar");
-						
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage());
+						}
 					}
 				
 					buscarTabela();
@@ -477,7 +546,7 @@ public class InterfaceProfessor extends JFrame {
 		pessoa.setSexo(sexo);
 		pessoa.setDataNascimento(dataConvertida);
 		pessoa.setLogradouro(logradouro);
-		pessoa.setLogradouro(bairro);
+		pessoa.setBairro(bairro);
 		pessoa.setCep(cep);
 		pessoa.setNumero(numero);
 		pessoa.setComplemento(complemento);
@@ -588,10 +657,8 @@ public class InterfaceProfessor extends JFrame {
 			txfMatricula.setText("");
 			txfFormacao.setText("");
 			jFormattedTextDataMatricula.setText("");
-			
 			clickDuplo=false;
 			txfNome.requestFocus();
-		
 		}
 		
 	void buscarTabela(){	

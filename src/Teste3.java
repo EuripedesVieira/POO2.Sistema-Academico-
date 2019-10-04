@@ -97,7 +97,6 @@ public class Teste3 extends JFrame {
 		but2.setBorder(new LineBorder(Color.blue,3,true));
 		cont1.add(but2);
 		but2.addActionListener(new ActionListener() {
-			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
@@ -111,8 +110,8 @@ public class Teste3 extends JFrame {
 				cont3.setVisible(true);
 				cont=false;
 			}
-			}
-		});
+		}
+	});
 		
 	}
 	

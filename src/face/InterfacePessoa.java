@@ -1,4 +1,4 @@
-package face;
+	package face;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -146,7 +146,7 @@ public class InterfacePessoa extends JFrame {
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder("Pessoas");
 		title.setTitleColor(Color.black);
-		scrlPessoa.setBorder(title);
+		scrlPessoa.setBorder(title);	
 		tblPessoa.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() >= 2) {

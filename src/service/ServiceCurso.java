@@ -4,16 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-
 import database.DataBase;
 import models.Curso;
 
 public class ServiceCurso {
-
-	static PreparedStatement ps;
 	
-	public void salvar(Curso curso) {
-		
+	static PreparedStatement ps;
+	public void salvar(Curso curso) throws Exception {
 		String command = "insert into cursos (nomecurso) values (?)";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
@@ -22,11 +19,14 @@ public class ServiceCurso {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao salvar");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
-	public void deletar(int linha) {
-		
+	public void deletar(int linha)throws Exception {
 		String command = "delete from cursos where idCurso=?";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
@@ -36,11 +36,14 @@ public class ServiceCurso {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao deletar");
+		}
+		finally{
+			ps.close();
 		}
 	}
 	
-	public void atualizar(Curso curso) {
-		
+	public void atualizar(Curso curso) throws Exception {
 		String command = "update cursos set nomeCurso=? where idCurso=?";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
@@ -50,18 +53,19 @@ public class ServiceCurso {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao atualizar");
 		}
+		finally{
+			ps.close();
+		}	
 	}
 	
-	
-	public void buscar(List<Curso> cursos) {
-		
+	public void buscar(List<Curso> cursos) throws Exception {	
 		String command = "select *from cursos";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
 			ResultSet result = ps.executeQuery();
-			
-			
+					
 			while(result.next()) {
 				Curso curso = new Curso();
 				
@@ -72,14 +76,9 @@ public class ServiceCurso {
 				curso.setNome(nomeCurso);
 				cursos.add(curso);
 			}
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao buscar dados");
 		}
 	}
-
-
 }
-	
-
-		

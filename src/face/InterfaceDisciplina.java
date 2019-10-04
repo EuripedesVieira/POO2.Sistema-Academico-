@@ -79,7 +79,12 @@ public class InterfaceDisciplina extends JFrame {
 	
 	void buscarTabela(){
 		listaDisciplina.clear();
-		disciplinaService.buscar(listaDisciplina);
+		try {
+			disciplinaService.buscar(listaDisciplina);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+
+		}
 	}
 
 	
@@ -209,44 +214,34 @@ public class InterfaceDisciplina extends JFrame {
 				nomeCurso = txfNome.getText();
 				codigoDisciplina = txfCodigo.getText();
 				
-				if(click_duplo==true) {
-					if(!nomeCurso.isEmpty() && !codigoDisciplina.isEmpty()) {
-
-						disciplina.setIdDisciplina(id);
-						disciplina.setCodigoDisciplina(codigoDisciplina);
-						disciplina.setNomeDisciplina(nomeCurso);
-
-						disciplinaService.atualizar(disciplina);
-						buscarTabela();
-						JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
-						limpaCampos();
-						containerPrincipal.add(scrlDisciplina);
-						campusFalse();
-						txfCodigo.requestFocus();
-						click_duplo=false;
-					}
-					else {
-						 campoValidacao(nomeCurso,codigoDisciplina);
-					}
-				}
+				disciplina.setCodigoDisciplina(codigoDisciplina);
+				disciplina.setNomeDisciplina(nomeCurso);
 				
-				else{	
-					if(!nomeCurso.isEmpty() && !codigoDisciplina.isEmpty()) {
-						disciplina.setCodigoDisciplina(codigoDisciplina);
-						disciplina.setNomeDisciplina(nomeCurso);
-						disciplinaService.salvar(disciplina);
-						buscarTabela();
-						JOptionPane.showMessageDialog(null, "Salvo com sucesso");
-						limpaCampos();
-						containerPrincipal.add(scrlDisciplina);
-						campusFalse();
-						click_duplo=false;
-						txfCodigo.requestFocus();
+				
+				if(!nomeCurso.isEmpty() && !codigoDisciplina.isEmpty()) {
+					if(click_duplo==true) {
+						disciplina.setIdDisciplina(id);
+						try {
+							disciplinaService.atualizar(disciplina);
+							JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
+							atulizarFrame();
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage());
+						}
 						
 					}
-					else {
-						 campoValidacao(nomeCurso,codigoDisciplina);
+					else{		
+						try {
+							disciplinaService.salvar(disciplina);
+							JOptionPane.showMessageDialog(null, "Salvo com sucesso");
+							atulizarFrame();
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage());
+						}
 					}
+				}
+				else {
+					campoValidacao(nomeCurso,codigoDisciplina);
 				}
 			}
 		});
@@ -263,27 +258,30 @@ public class InterfaceDisciplina extends JFrame {
 		jbExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(click_duplo==true) {
-					disciplinaService.deletar(id);
-					buscarTabela();
-					JOptionPane.showMessageDialog(null, "Deletado com sucesso");
-					containerPrincipal.add(scrlDisciplina);
-					click_duplo=false;
-					limpaCampos();
-					txfCodigo.requestFocus();
-					campusFalse();
+					try {
+						disciplinaService.deletar(id);
+						JOptionPane.showMessageDialog(null, "Deletado com sucesso");
+						atulizarFrame();
+					}catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage());
+					}
 				}
 				limpaCampos();
+				campusFalse();
+				click_duplo=false;
 				txfCodigo.requestFocus();
 			}
 		});
 	};
-
-/*
-	public void disciplinaInterface() throws IOException {
-		new InterfaceDisciplina();
-
-	};*/
 	
+	private void atulizarFrame() {
+		buscarTabela();
+		limpaCampos();
+		containerPrincipal.add(scrlDisciplina);
+		campusFalse();
+		txfCodigo.requestFocus();
+		click_duplo=false;
+	}
 	
 	public static void main(String[] args) throws IOException{
 		new InterfaceDisciplina();

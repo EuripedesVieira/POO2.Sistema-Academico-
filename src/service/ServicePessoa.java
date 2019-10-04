@@ -152,7 +152,7 @@ public class ServicePessoa {
 					pessoa.setSexo(sexo);
 					pessoa.setDataNascimento(dataNascimento);
 					pessoa.setLogradouro(logradouro);
-					pessoa.setLogradouro(bairro);
+					pessoa.setBairro(bairro);
 					pessoa.setCep(cep);
 					pessoa.setNumero(numero);
 					pessoa.setComplemento(complemento);
@@ -211,17 +211,17 @@ public class ServicePessoa {
 		return 0;
 	}
 	
-	public String converteData(String data) {
+	/*public String converteData(Date data) {
 
 		String array[] = new String[3];
-		array = data.split("/");
-		String dia = array[0];
+		array = data.split("-");
+		String ano = array[0];
 		String mes = array[1];
-		String ano = array[2];
-		String convertido = ano.concat("-"+mes+"-"+dia);
+		String dia = array[2];
+		String convertido = dia.concat("/"+mes+"/"+ano);
 		
 		return convertido;
-	}
+	}*/
 	
 	public Date dataParaSalvar(String dataNascimento) throws ParseException {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");

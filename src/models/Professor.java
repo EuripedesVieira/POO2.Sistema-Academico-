@@ -10,6 +10,7 @@ public class Professor {
 	private String nomeProfessor;
 	private String cpfProfessor;
 	private Date dataMatricula;
+	private int idPessoa;
 	
 	public int getIdProfessor() {
 		return idProfessor;
@@ -46,6 +47,12 @@ public class Professor {
 	}
 	public void setDataMatricula(Date dataMatricula) {
 		this.dataMatricula = dataMatricula;
+	}
+	public int getIdPessoa() {
+		return idPessoa;
+	}
+	public void setIdPessoa(int idPessoa) {
+		this.idPessoa = idPessoa;
 	}
 }
 	

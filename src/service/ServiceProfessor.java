@@ -19,7 +19,7 @@ public class ServiceProfessor {
 	static PreparedStatement ps;
 	
 	
-	public Boolean salvar(Pessoa pessoa, Professor professor) {
+	public void salvar(Pessoa pessoa, Professor professor) throws Exception{
 		
 		String command = "insert into pessoas (cpf,nome,sexo,dataNascimento,logradouro,cep,numero,complemento,email,idMunicipio,bairro) values (?,?,?,?,?,?,?,?,?,?,?)";
 		try {
@@ -51,21 +51,57 @@ public class ServiceProfessor {
 					ps.setString(3, professor.getFormacao());
 					ps.setInt(4, insertKey);
 					ps.executeUpdate();
-					ps.close();
-					
-					return true;
 				}
 				catch (SQLException e) {
 					e.printStackTrace();
-					return false;
+					throw new Exception("Erro ao salvar o professor");
 				}
 			}
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
-			return false;
+			throw new Exception("Erro ao salvar o professor");
+			
+		}finally {
+			ps.close();
 		}
-		return false;
+	}
+	
+	public void atualizar(Pessoa pessoa,Professor professor) {
+		
+		String command = "update pessoas set cpf=?, nome=?, sexo=?, dataNascimento=?, logradouro=?,cep=?, numero=?, complemento=?, email=?, idMunicipio=?, bairro=? where idPessoa=?";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps.setString(1, pessoa.getCpf());
+			ps.setString(2, pessoa.getNome());
+			ps.setString(3, pessoa.getSexo());
+			ps.setDate(4, pessoa.getDataNascimento());
+			ps.setString(5, pessoa.getLogradouro());
+			ps.setString(6, pessoa.getCep());
+			ps.setString(7, pessoa.getNumero());
+			ps.setString(8, pessoa.getComplemento());
+			ps.setString(9, pessoa.getEmail());
+			ps.setInt(10, pessoa.getIdMunicipio());
+			ps.setString(11, pessoa.getBairro());
+			ps.setInt(12, pessoa.getIdPessoa());
+			ps.executeUpdate();
+			
+			try {
+				command = "update professores set matriculaProfessor=?,dataMatriculaProfessor=?,formação=? where idProfessor=?";
+				ps = DataBase.retornaConexecao().prepareStatement(command);
+				ps.setString(1, professor.getMatriculaProfessor());
+				ps.setDate(2, professor.getDataMatricula());
+				ps.setString(3, professor.getFormacao());
+				ps.setInt(4, professor.getIdProfessor());
+				ps.executeUpdate();
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void buscarProfessores(List<Professor> professores) {
@@ -144,11 +180,111 @@ public class ServiceProfessor {
 		return 0;
 	}
 	
+	public void buscarItem(Professor professor, int id) {
+		
+		String command = "select *from professores";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ResultSet result = ps.executeQuery();
+						
+			while(result.next()) {
+				
+				if(result.getInt(1)==id) {
+					int idProfessor = result.getInt(1);
+					String matricula = result.getString(2);
+					Date dataMatricula = result.getDate(3);
+					String formacao= result.getString(4);
+					int idPessoa = result.getInt(5);
+					
+					professor.setIdProfessor(idProfessor);
+					professor.setMatriculaProfessor(matricula);
+					professor.setDataMatricula(dataMatricula);
+					professor.setFormacao(formacao);
+				}
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public int buscarIdPessoa(int idProfe) {
+		
+		String command = "select *from professores";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ResultSet result = ps.executeQuery();
+						
+			while(result.next()) {
+
+				int idProfessor = result.getInt(1);
+				int idPessoa = result.getInt(5);
+				
+				if(idProfessor!=idProfe)
+					continue;
+				return idPessoa;
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	public void buscarPessoa(Pessoa pessoa, int id) {
+		
+		String command = "select *from pessoas";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ResultSet result = ps.executeQuery();
+						
+			while(result.next()) {
+				
+				if(result.getInt(1)==id) {
+					int idPessoa = result.getInt(1);
+					String cpf = result.getString(2);
+					String nomePessoa = result.getString(3);
+					String sexo = result.getString(4);
+					Date dataNascimento = result.getDate(5);
+					String logradouro = result.getString(6);
+					String cep = result.getString(7);
+					String numero = result.getString(8);
+					String complemento = result.getString(9);
+					String email = result.getString(10);
+					int idMunicipio = result.getInt(11);
+					String bairro = result.getString(12);
+					
+					pessoa.setIdPessoa(idPessoa);
+					pessoa.setCpf(cpf);
+					pessoa.setNome(nomePessoa);
+					pessoa.setSexo(sexo);
+					pessoa.setDataNascimento(dataNascimento);
+					pessoa.setLogradouro(logradouro);
+					pessoa.setBairro(bairro);
+					pessoa.setCep(cep);
+					pessoa.setNumero(numero);
+					pessoa.setComplemento(complemento);
+					pessoa.setEmail(email);
+					pessoa.setIdMunicipio(idMunicipio);
+				}
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public Date dataParaSalvar(String dataNascimento) throws ParseException {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		java.util.Date dataConvertida = simpleDateFormat.parse(dataNascimento);
 		java.sql.Date dataParaArmazenar = new java.sql.Date(dataConvertida.getTime());
 		return dataParaArmazenar;
+	}
+	
+	public String dataParaMostar(Date data) throws ParseException {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		String dataParaInterface = simpleDateFormat.format(data); 
+		return dataParaInterface;
 	}
 
 }

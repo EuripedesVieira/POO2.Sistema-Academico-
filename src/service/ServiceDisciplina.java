@@ -10,7 +10,7 @@ import models.Disciplina;
 public class ServiceDisciplina {
 static PreparedStatement ps;
 	
-	public void salvar(Disciplina disciplina) {
+	public void salvar(Disciplina disciplina) throws Exception {
 		
 		String command = "insert into disciplinas (codigoDisciplina, nomeDisciplina) values (?,?)";
 		try {
@@ -21,10 +21,14 @@ static PreparedStatement ps;
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao salvar");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
-	public void deletar(int linha) {
+	public void deletar(int linha) throws Exception {
 		
 		String command = "delete from disciplinas where idDisciplina=?";
 		try {
@@ -34,10 +38,14 @@ static PreparedStatement ps;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao deletar");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
-	public void atualizar(Disciplina disciplina) {
+	public void atualizar(Disciplina disciplina) throws Exception {
 		
 		String command = "update disciplinas set codigoDisciplina=?, nomeDisciplina=? where idDisciplina=?";
 		try {
@@ -49,11 +57,15 @@ static PreparedStatement ps;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao atualizar");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
 	
-	public void buscar(List<Disciplina> disciplinas) {
+	public void buscar(List<Disciplina> disciplinas) throws Exception {
 		
 		String command = "select *from disciplinas";
 		try {
@@ -75,7 +87,10 @@ static PreparedStatement ps;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao buscar dados");
 		}
-
+		finally {
+			ps.close();
+		}
 	}
  }

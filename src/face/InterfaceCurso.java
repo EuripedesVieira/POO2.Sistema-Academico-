@@ -46,7 +46,7 @@ public class InterfaceCurso extends JFrame {
 	private String nomeCurso;
 	private String campo = "Campo obrigatório";
 	private int numeroLinha;
-	private int id_para_deletar;
+	private int idParaDeletar;
 	
 	private boolean click_duplo = false; 
 	
@@ -73,7 +73,11 @@ public class InterfaceCurso extends JFrame {
 	
 	void buscarTabela(){
 		listaCurso.clear();
-		cursoService.buscar(listaCurso);
+		try {
+			cursoService.buscar(listaCurso);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
 	}
 
 	
@@ -93,7 +97,7 @@ public class InterfaceCurso extends JFrame {
 					numeroLinha = tblCurso.getSelectedRow();
 					Curso curso = listaCurso.get(numeroLinha);
 					String nome = curso.getNome();
-					id_para_deletar = curso.getIdCurso();
+					idParaDeletar = curso.getIdCurso();
 					txfNome.setText(nome);
 					click_duplo = true;
 					jlobrigatorio1.setVisible(false);
@@ -157,38 +161,34 @@ public class InterfaceCurso extends JFrame {
 	void action() {
 		jbSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				nomeCurso = txfNome.getText();
-				
+				nomeCurso = txfNome.getText().trim();
+				curso.setNome(nomeCurso);
+
 				if(click_duplo==true) {
 					if(!nomeCurso.isEmpty()) {
-						curso.setNome(nomeCurso);
-						curso.setIdCurso(id_para_deletar);
-						System.out.println(id_para_deletar);
-						cursoService.atualizar(curso);
-						buscarTabela();
-						JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
-						limpaCampos();
-						containerPrincipal.add(scrlCurso);
-						jlobrigatorio1.setVisible(false);
-						txfNome.requestFocus();
-						click_duplo=false;
+						
+						curso.setIdCurso(idParaDeletar);
+						try {
+							cursoService.atualizar(curso);
+							JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage());
+						}
+						atualizarTabela();
 					}
 					else {
 						jlobrigatorio1.setVisible(true);
 					}	
 				}
-				
 				else{	
 					if(!nomeCurso.isEmpty()) {
-						curso.setNome(nomeCurso);
-						cursoService.salvar(curso);
-						buscarTabela();
-						JOptionPane.showMessageDialog(null, "Salvo com sucesso");
-						limpaCampos();
-						containerPrincipal.add(scrlCurso);
-						jlobrigatorio1.setVisible(false);
-						txfNome.requestFocus();
-						
+						try {
+							cursoService.salvar(curso);
+							JOptionPane.showMessageDialog(null, "Salvo com sucesso");
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage());
+						}
+						atualizarTabela();
 					}
 					else {
 						jlobrigatorio1.setVisible(true);
@@ -196,7 +196,8 @@ public class InterfaceCurso extends JFrame {
 				}
 			}
 		});
-
+		
+		
 		jbCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				limpaCampos();
@@ -209,21 +210,28 @@ public class InterfaceCurso extends JFrame {
 		jbExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(click_duplo==true) {
-					cursoService.deletar(id_para_deletar);
-					buscarTabela();
-					JOptionPane.showMessageDialog(null, "Deletado com sucesso");
-					containerPrincipal.add(scrlCurso);
-					click_duplo=false;
-					limpaCampos();
-					txfNome.requestFocus();
-					jlobrigatorio1.setVisible(false);
-				
+					try {
+						cursoService.deletar(idParaDeletar);
+						JOptionPane.showMessageDialog(null, "Deletado com sucesso");
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage());
+					}
+					atualizarTabela();
 				}
 				limpaCampos();
 				txfNome.requestFocus();
 			}
 		});
 	};
+	
+	void atualizarTabela() {
+		buscarTabela();
+		limpaCampos();
+		containerPrincipal.add(scrlCurso);
+		jlobrigatorio1.setVisible(false);
+		txfNome.requestFocus();
+		click_duplo=false;
+	}
 
 	
 	public static void main(String[] args) throws IOException{

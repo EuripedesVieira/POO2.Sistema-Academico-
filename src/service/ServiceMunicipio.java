@@ -4,6 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import javax.swing.JOptionPane;
+
 import database.DataBase;
 import models.Municipio;
 
@@ -11,7 +14,7 @@ public class ServiceMunicipio {
 
 	static PreparedStatement ps;
 
-	public void salvar(Municipio municipio) {
+	public void salvar(Municipio municipio) throws Exception {
 		
 		String command = "insert into municipios (nomeMunicipio, uf) values (?,?)";
 		try {
@@ -22,10 +25,14 @@ public class ServiceMunicipio {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao salvar");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
-	public void deletar(int linha) {
+	public void deletar(int linha) throws Exception{
 		
 		String command = "delete from municipios where idMunicipio=?";
 		try {
@@ -35,10 +42,14 @@ public class ServiceMunicipio {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao deletar");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
-	public void atualizar(Municipio municipio) {
+	public void atualizar(Municipio municipio) throws Exception{
 		
 		String command = "update municipios set nomeMunicipio=?, uf=? where idMunicipio=?";
 		try {
@@ -50,11 +61,15 @@ public class ServiceMunicipio {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao atualizar");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
 	
-	public void buscar(List<Municipio> municipios) {
+	public void buscar(List<Municipio> municipios) throws Exception{
 		
 		String command = "select *from municipios";
 		try {
@@ -76,10 +91,11 @@ public class ServiceMunicipio {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao buscar dados");
 		}
 	}
 	
-	public void buscarItem(Municipio municipio, int id) {
+	public void buscarItem(Municipio municipio, int id) throws Exception {
 		
 		String command = "select *from municipios";
 		try {
@@ -102,6 +118,7 @@ public class ServiceMunicipio {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao buscar municípios");
 		}
 	}
 }
