@@ -1,12 +1,30 @@
 package models;
 
+import java.sql.Date;
+
 public class Aluno {
 	private int idAluno;
 	private int idPessoa;
-	private int idCurso;
 	private String matricula;
-	private String dataMatricula;
+	private Date dataMatricula;
+	private String nomeAluno;
+	private String cpfAluno;
+	private String nomeCurso;
+	private int idCurso;
+	
+	public String getNomeAluno() {
+		return nomeAluno;
+	}
+	public String getCpfAluno() {
+		return cpfAluno;
+	}
 
+	public void setNomeAluno(String nomeAluno) {
+		this.nomeAluno = nomeAluno;
+	}
+	public void setCpfAluno(String cpfAluno) {
+		this.cpfAluno = cpfAluno;
+	}
 	public int getIdAluno() {
 		return idAluno;
 	}
@@ -19,23 +37,29 @@ public class Aluno {
 	public void setIdPessoa(int idPessoa) {
 		this.idPessoa = idPessoa;
 	}
-	public int getIdCurso() {
-		return idCurso;
-	}
-	public void setIdCurso(int idCurso) {
-		this.idCurso = idCurso;
-	}
 	public String getMatricula() {
 		return matricula;
 	}
 	public void setMatricula(String matricula) {
 		this.matricula = matricula;
 	}
-	public String getDataMatricula() {
+	public Date getDataMatricula() {
 		return dataMatricula;
 	}
-	public void setDataMatricula(String dataMatricula) {
+	public void setDataMatricula(Date dataMatricula) {
 		this.dataMatricula = dataMatricula;
+	}
+	public String getNomeCurso() {
+		return nomeCurso;
+	}
+	public int getIdCurso() {
+		return idCurso;
+	}
+	public void setNomeCurso(String nomeCurso) {
+		this.nomeCurso = nomeCurso;
+	}
+	public void setIdCurso(int idCurso) {
+		this.idCurso = idCurso;
 	}
 	
 	

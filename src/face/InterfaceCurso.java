@@ -164,35 +164,31 @@ public class InterfaceCurso extends JFrame {
 				nomeCurso = txfNome.getText().trim();
 				curso.setNome(nomeCurso);
 
-				if(click_duplo==true) {
-					if(!nomeCurso.isEmpty()) {
-						
+				
+				if(!nomeCurso.isEmpty()) {
+					if(click_duplo==true) {
 						curso.setIdCurso(idParaDeletar);
 						try {
 							cursoService.atualizar(curso);
 							JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
+							atualizarTabela();
 						} catch (Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage());
 						}
-						atualizarTabela();
+						
 					}
-					else {
-						jlobrigatorio1.setVisible(true);
-					}	
-				}
-				else{	
-					if(!nomeCurso.isEmpty()) {
+					else{	
 						try {
 							cursoService.salvar(curso);
 							JOptionPane.showMessageDialog(null, "Salvo com sucesso");
-						} catch (Exception e1) {
+							atualizarTabela();
+						}catch (Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage());
 						}
-						atualizarTabela();
 					}
-					else {
-						jlobrigatorio1.setVisible(true);
-					}
+				}
+				else{
+					jlobrigatorio1.setVisible(true);
 				}
 			}
 		});
@@ -220,6 +216,7 @@ public class InterfaceCurso extends JFrame {
 				}
 				limpaCampos();
 				txfNome.requestFocus();
+				jlobrigatorio1.setVisible(false);
 			}
 		});
 	};

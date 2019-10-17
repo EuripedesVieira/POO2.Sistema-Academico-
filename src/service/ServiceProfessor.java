@@ -67,6 +67,34 @@ public class ServiceProfessor {
 		}
 	}
 	
+	public void deletar(int idProfessor, int idPessoa) throws Exception {
+
+		String command = "delete from professores where idProfessor=?";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps.setInt(1,idProfessor);
+			ps.executeUpdate();
+			
+			try {
+				command = "delete from pessoas where idPessoa=?";
+				ps = DataBase.retornaConexecao().prepareStatement(command);
+				ps.setInt(1,idPessoa);
+				ps.executeUpdate();
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new Exception("Erro ao deletar pessoa");
+			}
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new Exception("Erro ao deletar professor");
+		}
+		finally {
+			ps.close();
+		}
+	}
+	
 	public void atualizar(Pessoa pessoa,Professor professor) {
 		
 		String command = "update pessoas set cpf=?, nome=?, sexo=?, dataNascimento=?, logradouro=?,cep=?, numero=?, complemento=?, email=?, idMunicipio=?, bairro=? where idPessoa=?";
@@ -103,6 +131,9 @@ public class ServiceProfessor {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
 	
 	public void buscarProfessores(List<Professor> professores) {
 		String command = " select professores.idProfessor, pessoas.nome, pessoas.cpf, professores.matriculaProfessor, professores.formação from professores inner join pessoas on professores.idPessoa=pessoas.idPessoa";

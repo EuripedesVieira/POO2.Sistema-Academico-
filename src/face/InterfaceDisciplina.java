@@ -211,12 +211,12 @@ public class InterfaceDisciplina extends JFrame {
 	void action() {
 		jbSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				nomeCurso = txfNome.getText();
-				codigoDisciplina = txfCodigo.getText();
+				
+				nomeCurso = txfNome.getText().trim();
+				codigoDisciplina = txfCodigo.getText().trim();
 				
 				disciplina.setCodigoDisciplina(codigoDisciplina);
 				disciplina.setNomeDisciplina(nomeCurso);
-				
 				
 				if(!nomeCurso.isEmpty() && !codigoDisciplina.isEmpty()) {
 					if(click_duplo==true) {
@@ -225,7 +225,7 @@ public class InterfaceDisciplina extends JFrame {
 							disciplinaService.atualizar(disciplina);
 							JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
 							atulizarFrame();
-						} catch (Exception e1) {
+						}catch(Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage());
 						}
 						
@@ -287,5 +287,3 @@ public class InterfaceDisciplina extends JFrame {
 		new InterfaceDisciplina();
 	};
 };
-
-

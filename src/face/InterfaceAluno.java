@@ -25,19 +25,21 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
-import database.DataBase;
-import modelTable.TableProfessor;
+import modelTable.TableAluno;
+import models.Aluno;
+import models.Curso;
 import models.Municipio;
 import models.Pessoa;
-import models.Professor;
 import service.FuncoesData;
-import service.ServiceProfessor;
+import service.ServiceAluno;
 
-public class InterfaceProfessor extends JFrame {
-
+public class InterfaceAluno extends JFrame {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private JPanel containerPrincipal;
 	private JPanel containerDadosPessoais;
-	private JPanel containerDadosProfessores;
+	private JPanel containerDadosAlunos;
 	
 	private JTextField txfNome;
 	private JTextField txfLogradouro;
@@ -45,8 +47,12 @@ public class InterfaceProfessor extends JFrame {
 	private JTextField txfNumero;
 	private JTextField txfComplemento;
 	private JTextField txfEmail;
+	
 	private JTextField txfMatricula;
-	private JTextField txfFormacao;
+
+	private JComboBox<String> jcSexo;
+	private JComboBox<String> municipios;
+	private JComboBox<String> cursos;
 	
 	private JLabel jlNome;
 	private JLabel jlCodigo;
@@ -62,7 +68,8 @@ public class InterfaceProfessor extends JFrame {
 	
 	private JLabel jlMatricula;
 	private JLabel jlDataMatricula;
-	private JLabel jlFormacao;
+	private JLabel jlData;
+	private JLabel jNomeCurso;
 	
 	private JLabel jlobrigatorio1;
 	private JLabel jlobrigatorio2;
@@ -72,13 +79,22 @@ public class InterfaceProfessor extends JFrame {
 	private JLabel jlobrigatorioBairro;
 	private JLabel jlobrigatorioCep;
 	private JLabel jlobrigatorioCodigoMatricula;
-	private JLabel jlobrigatorioDataMatricula;
-	private JLabel jlobrigatorioFormacao;
 	
+	private MaskFormatter mascaraCpf = null;
+	private  MaskFormatter mascaraData= null;
+	private MaskFormatter mascaraCep = null;
+
+	private JFormattedTextField jFormattedTextCpf;
+	private JFormattedTextField jFormattedTextData;
+	private JFormattedTextField jFormattedTextCep;
+	
+	private JButton jbSalvar;
+	private JButton jbExcluir;
+	private JButton jbCancelar;
+
 	private String campo = "Campo obrigatório";	
-	
+
 	private Date dataConvertida;
-	private Date dataMatriculaConvertida;
 	private String nome;
 	private String cpf;
 	private String sexo;
@@ -89,76 +105,56 @@ public class InterfaceProfessor extends JFrame {
 	private String complemento;
 	private String email;
 	private String nomeMunicipio;
-	private int idMunucipio;
+	private int idMunicipio;
 	private String codigoMatricula;
-	private String formacao;
-	private Date dataNascimento;
+	private String dataMatricula;
+	private String dataNascimento;
 	private int idPessoa;
-	private int idProfessor;
+	private int idCurso;
+	private String nomeCurso;
 
-	private MaskFormatter mascaraCpf = null;
-	private  MaskFormatter mascaraData= null;
-	private MaskFormatter mascaraCep = null;
-
-	private JFormattedTextField jFormattedTextCpf;
-	private JFormattedTextField jFormattedTextData;
-	private JFormattedTextField jFormattedTextCep;
-	private JFormattedTextField jFormattedTextDataMatricula;
+	private boolean clickDuplo = false; 
 	
-	private JButton jbSalvar;
-	private JButton jbExcluir;
-	private JButton jbCancelar;
-		
-	private JComboBox<String> jcSexo;
-	private JComboBox<String> municipios;
+	private TableAluno ModelotabelaAluno;
+	private JTable tblAluno;
+	private JScrollPane scrlAluno;
 	
-	private List<Professor> listaProfessores = new ArrayList<Professor>();
+	private List<Aluno> listaAlunos = new ArrayList<Aluno>();
 	private List<Municipio> listaMunucipios = new ArrayList<Municipio>();
-	
-	private TableProfessor ModelotabelaProfessor;
-	private JTable tblProfessor;
-	private JScrollPane scrlProfessor;
+	private List<Curso> listaCursos = new ArrayList<Curso>();
 	
 	Pessoa pessoa = new Pessoa();
-	Professor professor = new Professor();
-	ServiceProfessor professorService = new ServiceProfessor();
+	Aluno aluno = new Aluno();
+	ServiceAluno alunoService = new ServiceAluno();
 	FuncoesData funcoesData = new FuncoesData();
-	
-	private boolean clickDuplo = false;
-	private boolean isDate = false;
-
-	
-	private static final long serialVersionUID = 1L;
-
-	public InterfaceProfessor() throws IOException {
+		
+	public InterfaceAluno() throws IOException{
 		iniciaInterface();
-		
 	}
-	
 	private void iniciaInterface() throws IOException{
-		
-		defineMask();
+		buscarTabelaInicio();
 		defineJP();
-		buscarTabela();
+		defineMask();
 		containerPessoas();
 		percorreListaMunicipio();
-		containerProfessores();
+		containerAluno();
+		percorreListaCurso();
 		defineLb();
 		defineBt();
 		acoesBottons();
-		modeloTabelaProfessor();
+		modeloTabelaAluno();
 		setVisible(true);
 	}
 	
 	void defineJP() {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("Professores");
+		setTitle("Alunos");
 		containerPrincipal = new JPanel();
 		containerPrincipal.setLayout(null);
 		this.add(containerPrincipal);
-	};
-
+	}
+	
 	void containerPessoas() {
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder("Dados pessoais");
@@ -218,61 +214,20 @@ public class InterfaceProfessor extends JFrame {
 		containerDadosPessoais.add(municipios);
 	}
 	
-	void containerProfessores() {
-		TitledBorder title;
-		title = BorderFactory.createTitledBorder("Dados professor");
-		title.setTitleColor(Color.black);
-	
-		containerDadosProfessores = new JPanel();
-		containerDadosProfessores.setBounds(30, 230, 1245, 130);
-		containerDadosProfessores.setBorder(title);
-		containerPrincipal.add(containerDadosProfessores);
-		containerDadosProfessores.setLayout(null);
-		containerDadosProfessores.setVisible(true);
-		
-		txfMatricula = new JTextField();
-		txfMatricula.setBounds(30, 50, 300, 30);
-		containerDadosProfessores.add(txfMatricula);
-		
-	    jFormattedTextDataMatricula = new JFormattedTextField(mascaraData);
-		jFormattedTextDataMatricula.setBounds(350, 50, 150, 30);
-		containerDadosProfessores.add(jFormattedTextDataMatricula);
-		
-		txfFormacao = new JTextField();
-		txfFormacao .setBounds(520, 50, 300, 30);
-		containerDadosProfessores.add(txfFormacao);
-		
-		jlMatricula = new JLabel("Codígo da matricula");
-		jlMatricula.setBounds(30, 30, 150, 20);
-		containerDadosProfessores.add(jlMatricula);
-		
-		jlDataMatricula = new JLabel("Data da Matricula");
-		jlDataMatricula.setBounds(350, 30, 150, 20);
-		containerDadosProfessores.add(jlDataMatricula);
-		
-		jlFormacao = new JLabel("Formação");
-		jlFormacao.setBounds(520, 30, 100, 20);
-		containerDadosProfessores.add(jlFormacao);
-		
-		jlobrigatorioCodigoMatricula = new JLabel(campo);
-		jlobrigatorioCodigoMatricula.setForeground(Color.red);
-		jlobrigatorioCodigoMatricula.setBounds(30, 80, 150, 20);
-		jlobrigatorioCodigoMatricula.setVisible(false);
-		containerDadosProfessores.add(jlobrigatorioCodigoMatricula);
-		
-		jlobrigatorioDataMatricula = new JLabel(campo);
-		jlobrigatorioDataMatricula.setForeground(Color.red);
-		jlobrigatorioDataMatricula.setBounds(350, 80, 150, 20);
-		jlobrigatorioDataMatricula.setVisible(false);
-		containerDadosProfessores.add(jlobrigatorioDataMatricula);
-		
-		jlobrigatorioFormacao= new JLabel(campo);
-		jlobrigatorioFormacao.setForeground(Color.red);
-		jlobrigatorioFormacao.setBounds(520, 80, 150, 20);
-		jlobrigatorioFormacao.setVisible(false);
-		containerDadosProfessores.add(jlobrigatorioFormacao);
-	}
+	void defineMask() {
+		 try {
+			mascaraCpf = new MaskFormatter("###.###.###-##");
+			mascaraData = new MaskFormatter("##/##/####");
+			mascaraCep = new MaskFormatter("#####-###");
+			mascaraData.setPlaceholderCharacter('_');
+			mascaraCpf.setPlaceholderCharacter('_');
+			mascaraCep.setPlaceholderCharacter('_');
 
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	void defineLb() {
 
 		jlNome = new JLabel("Nome");
@@ -361,90 +316,51 @@ public class InterfaceProfessor extends JFrame {
 		jlobrigatorioCep.setVisible(false);
 		containerDadosPessoais.add(jlobrigatorioCep);
 	};
-	
-	void modeloTabelaProfessor() {
+	void containerAluno() {
 		TitledBorder title;
-		title = BorderFactory.createTitledBorder("Pessoas");
+		title = BorderFactory.createTitledBorder("Dados aluno");
 		title.setTitleColor(Color.black);
+	
+		containerDadosAlunos = new JPanel();
+		containerDadosAlunos.setBounds(30, 230, 1245, 130);
+		containerDadosAlunos.setBorder(title);
+		containerPrincipal.add(containerDadosAlunos);
+		containerDadosAlunos.setLayout(null);
+		containerDadosAlunos.setVisible(true);
 		
-		ModelotabelaProfessor = new TableProfessor(listaProfessores);
-		tblProfessor = new JTable(ModelotabelaProfessor);
-		scrlProfessor = new JScrollPane(tblProfessor);
-		scrlProfessor.setBorder(title);
-		scrlProfessor.setBounds(30, 420, 1245, 200);
-		containerPrincipal.add(scrlProfessor);
-		tblProfessor.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				if(e.getClickCount()>=2) {
-					int numeroLinha = tblProfessor.getSelectedRow();
-					Professor dados = listaProfessores.get(numeroLinha);
-					idProfessor = dados.getIdProfessor();
-					idPessoa = professorService.buscarIdPessoa(idProfessor);
-					professorService.buscarPessoa(pessoa, idPessoa);
-										
-					idPessoa = pessoa.getIdPessoa();
-					idMunucipio = pessoa.getIdMunicipio();
-					cpf = pessoa.getCpf();
-					nome = pessoa.getNome();
-					sexo = pessoa.getSexo();
-					dataNascimento = pessoa.getDataNascimento();
-					logradouro = pessoa.getLogradouro();
-					bairro =pessoa.getBairro();
-					cep = pessoa.getCep();
-					numero = pessoa.getNumero();
-					complemento = pessoa.getComplemento();
-					email = pessoa.getEmail();
-					numero = pessoa.getNumero();
-					complemento = pessoa.getComplemento();
-	
-					
-					try {
-						String dataNascimentoParaMostrar;
-						String dataMatriculaParaMostrar;
-						dataNascimentoParaMostrar = professorService.dataParaMostar(dataNascimento);
-						dataMatriculaParaMostrar = professorService.dataParaMostar(dataNascimento);
-						jFormattedTextData.setText(dataNascimentoParaMostrar);
-						jFormattedTextDataMatricula.setText(dataMatriculaParaMostrar);
-					} catch (ParseException e1) {
-						e1.printStackTrace();
-					}
-
-				
-					txfNome.setText(nome);
-					jFormattedTextCpf.setText(cpf);
-					jcSexo.setSelectedItem(sexo);
-					txfLogradouro.setText(logradouro);
-					txfBairro.setText(bairro);
-					jFormattedTextCep.setText(cep);
-					txfNumero.setText(numero);
-					txfComplemento.setText(complemento);
-					txfEmail.setText(email);
-					txfLogradouro.setText(logradouro);
-					txfNumero.setText(numero);
-					txfComplemento.setText(complemento);
-					
-					
-					txfFormacao.setText(dados.getFormacao());
-					txfMatricula.setText(dados.getMatriculaProfessor());
-					clickDuplo=true;
-				}
-			}
-		});
-	}
-	
-	
-	void defineMask() {
-		 try {
-			mascaraCpf = new MaskFormatter("###.###.###-##");
-			mascaraData = new MaskFormatter("##/##/####");
-			mascaraCep = new MaskFormatter("#####-###");
-			mascaraData.setPlaceholderCharacter('_');
-			mascaraCpf.setPlaceholderCharacter('_');
-			mascaraCep.setPlaceholderCharacter('_');
-
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		txfMatricula = new JTextField();
+		txfMatricula.setBounds(30, 50, 200, 30);
+		containerDadosAlunos.add(txfMatricula);
+		
+		cursos = new JComboBox<String>();
+		cursos.setBounds(250, 50, 200, 30);
+		containerDadosAlunos.add(cursos);
+		
+		jlData = new JLabel();
+		jlData.setBounds(470, 50, 150, 30);
+		containerDadosAlunos.add(jlData);
+		jlData.setVisible(false);
+		
+		
+		jlMatricula = new JLabel("Codígo da matricula");
+		jlMatricula.setBounds(30, 30, 150, 20);
+		containerDadosAlunos.add(jlMatricula);
+		
+		jlDataMatricula = new JLabel("Data da Matricula");
+		jlDataMatricula.setBounds(470, 30, 150, 20);
+		jlDataMatricula.setVisible(false);
+		containerDadosAlunos.add(jlDataMatricula);
+		
+		jNomeCurso = new JLabel("Curso");
+		jNomeCurso.setBounds(250, 30, 150, 20);
+		jNomeCurso.setVisible(true);
+		containerDadosAlunos.add(jNomeCurso);
+		
+		jlobrigatorioCodigoMatricula = new JLabel(campo);
+		jlobrigatorioCodigoMatricula.setForeground(Color.red);
+		jlobrigatorioCodigoMatricula.setBounds(30, 80, 150, 20);
+		jlobrigatorioCodigoMatricula.setVisible(false);
+		containerDadosAlunos.add(jlobrigatorioCodigoMatricula);
 	}
 	
 	void defineBt() {
@@ -461,14 +377,105 @@ public class InterfaceProfessor extends JFrame {
 		containerPrincipal.add(jbCancelar);
 	};
 	
+	void modeloTabelaAluno() {
+		TitledBorder title;
+		title = BorderFactory.createTitledBorder("Pessoas");
+		title.setTitleColor(Color.black);
+		
+		ModelotabelaAluno = new TableAluno(listaAlunos);
+		tblAluno = new JTable(ModelotabelaAluno);
+		scrlAluno = new JScrollPane(tblAluno);
+		scrlAluno.setBorder(title);
+		scrlAluno.setBounds(30, 420, 1245, 200);
+		containerPrincipal.add(scrlAluno);
+		tblAluno.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount()>=2) {
+					int numeroLinha = tblAluno.getSelectedRow();
+					aluno = listaAlunos.get(numeroLinha);					
+					idPessoa=aluno.getIdPessoa();
+					
+					try {
+						alunoService.buscarPessoa(pessoa, idPessoa);
+					} catch (Exception e2) {
+						JOptionPane.showMessageDialog(null, e2.getMessage());
+					}
+					
+					
+					idPessoa = pessoa.getIdPessoa();
+					idMunicipio = pessoa.getIdMunicipio();
+					cpf = pessoa.getCpf();
+					nome = pessoa.getNome();
+					sexo = pessoa.getSexo();
+					Date date = pessoa.getDataNascimento();
+					logradouro = pessoa.getLogradouro();
+					bairro =pessoa.getBairro();
+					cep = pessoa.getCep();
+					numero = pessoa.getNumero();
+					complemento = pessoa.getComplemento();
+					email = pessoa.getEmail();
+					numero = pessoa.getNumero();
+					complemento = pessoa.getComplemento();
+					
+					codigoMatricula = aluno.getMatricula();
+					Date dateMatricula = aluno.getDataMatricula();
+					nomeCurso = aluno.getNomeCurso();
+					
+					try {
+						nomeMunicipio=alunoService.buscarItemMunicipio(idMunicipio);
+					} catch (Exception e2) {
+						JOptionPane.showMessageDialog(null, e2.getMessage());
+					}
+				
+					try {					
+						dataNascimento = funcoesData.dataParaMostar(date);
+						dataMatricula = funcoesData.dataParaMostar(dateMatricula);
+						jFormattedTextData.setText(dataNascimento);
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+
+					txfNome.setText(nome);
+					jFormattedTextCpf.setText(cpf);
+					jcSexo.setSelectedItem(sexo);
+					txfLogradouro.setText(logradouro);
+					txfBairro.setText(bairro);
+					jFormattedTextCep.setText(cep);
+					txfNumero.setText(numero);
+					txfComplemento.setText(complemento);
+					txfEmail.setText(email);
+					txfLogradouro.setText(logradouro);
+					txfNumero.setText(numero);
+					txfComplemento.setText(complemento);
+					municipios.setSelectedItem(nomeMunicipio);
+					
+					txfMatricula.setText(codigoMatricula);
+					cursos.setSelectedItem(nomeCurso);
+					jlData.setText(dataMatricula);
+					jlData.setVisible(true);
+					jlDataMatricula.setVisible(true);
+					clickDuplo=true;
+					}
+				}
+		});
+	}
+	
+	 int isInteger(String text) {
+		 int cont = 0;
+		 for(int i=0; i<text.length(); i++) {
+			 if(Character.isDigit(text.charAt(i))) {
+				 cont++;
+			 }
+		 }
+		 return cont;
+	 }
+	 
 	void acoesBottons() {
 		jbSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			
 				int contdata = isInteger(jFormattedTextData.getText());
 				int contcpf = isInteger(jFormattedTextCpf.getText());
 				int contcep = isInteger(jFormattedTextCep.getText());
-				int contDataMatricula = isInteger(jFormattedTextDataMatricula.getText());
 				
 				nome = txfNome.getText().trim();
 				cpf = jFormattedTextCpf.getText();
@@ -480,60 +487,54 @@ public class InterfaceProfessor extends JFrame {
 				numero = txfNumero.getText();
 				complemento = txfComplemento.getText();
 				nomeMunicipio = (String) municipios.getSelectedItem();
-				idMunucipio=professorService.salvarIdMunicipio(nomeMunicipio);
-				
 				codigoMatricula = txfMatricula.getText().trim();
-				formacao = txfFormacao.getText().trim();
-								
-				if(contdata==8 && contDataMatricula==8) {
-					String dataNascimento = jFormattedTextData.getText();
-					String dataMatricula = jFormattedTextDataMatricula.getText();
-
-					isDate = funcoesData.isDate(dataNascimento);
-
-					if(isDate==true) {
-						JOptionPane.showMessageDialog(null, "Data correta");
-						try {
-							dataConvertida = professorService.dataParaSalvar(dataNascimento);
-							dataMatriculaConvertida = professorService.dataParaSalvar(dataMatricula);
-						} catch (ParseException e1) {
-							e1.printStackTrace();
-						}
-					}
-					else {
-						JOptionPane.showMessageDialog(null, "Data incorreta");
+				nomeCurso = (String) cursos.getSelectedItem();
+			
+				try {
+					idCurso = alunoService.buscarIdCurso(nomeCurso);
+					idMunicipio= alunoService.buscarIdMunicipio(nomeMunicipio);
+				} catch (Exception e3) {
+					JOptionPane.showMessageDialog(null, e3.getMessage());
+				}
+				
+				
+				if(contdata==8) {
+					dataNascimento = jFormattedTextData.getText();
+					try {
+						dataConvertida = funcoesData.dataParaSalvar(dataNascimento);
+					} catch (ParseException e1) {
+						e1.printStackTrace();
 					}
 				}
 				
-
-				
 				if(contcpf==11 && !nome.isEmpty() && !sexo.isEmpty() && contdata == 8
 				   && !logradouro.isEmpty() && !bairro.isEmpty() && contcep == 8 && !email.isEmpty()
-				   && !codigoMatricula.isEmpty() && contDataMatricula==8 && !formacao.isEmpty()) {
-			
+				   && !codigoMatricula.isEmpty()){
+				
 					carregaObjetoPessoa();
-					CarregaObjetoProfessor();
+					CarregaObjetoAluno();
 	
 					if(clickDuplo==true) {
-						professor.setIdProfessor(idProfessor);
-						professorService.atualizar(pessoa,professor);
-						JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
+						try {
+							alunoService.atualizar(pessoa,aluno);
+							JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage());
+						}
 					}	
 					else{
 						try {
-							professorService.salvar(pessoa, professor);
+							alunoService.salvar(pessoa, aluno);
 							JOptionPane.showMessageDialog(null, "Salvo com sucesso");
 						} catch (Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage());
 						}
 					}
-				
-					buscarTabela();
-					containerPrincipal.add(scrlProfessor);
 					campusFalse();
+					buscarTabela();
 				}
 				else {
-					campoValidacao(nome,contcpf,contdata,email,logradouro,bairro,contcep,codigoMatricula,contDataMatricula,formacao);
+					campoValidacao(nome,contcpf,contdata,email,logradouro,bairro,contcep,codigoMatricula);
 				}
 			}
 		});
@@ -543,12 +544,14 @@ public class InterfaceProfessor extends JFrame {
 				campusFalse();
 			}
 		});
+		
 		jbExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(clickDuplo==true) {
 					try {
-						professorService.deletar(idProfessor,idPessoa);
+						alunoService.deletar(idPessoa);
 						JOptionPane.showMessageDialog(null, "Deletado com sucesso");
+						buscarTabela();
 					} catch (Exception e1) {
 						JOptionPane.showMessageDialog(null, e1.getMessage());
 					}
@@ -556,8 +559,29 @@ public class InterfaceProfessor extends JFrame {
 				campusFalse();
 			}
 		});
+		
 	}
 	
+	void buscarTabela() {
+		try {
+			if(!listaAlunos.isEmpty())
+				listaAlunos.clear();
+			alunoService.buscarTabela(listaAlunos);
+			containerPrincipal.add(scrlAluno);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	};
+	
+	void buscarTabelaInicio() {
+		try {
+			alunoService.buscarTabela(listaAlunos);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	};
+
+
 	
 	void carregaObjetoPessoa() {
 		pessoa.setCpf(cpf);
@@ -570,37 +594,52 @@ public class InterfaceProfessor extends JFrame {
 		pessoa.setNumero(numero);
 		pessoa.setComplemento(complemento);
 		pessoa.setEmail(email);
-		pessoa.setIdMunicipio(idMunucipio);
+		pessoa.setIdMunicipio(idMunicipio);
 	}
 	
-	void CarregaObjetoProfessor() {
-		professor.setMatriculaProfessor(codigoMatricula);
-		professor.setDataMatricula(dataMatriculaConvertida);
-		professor.setFormacao(formacao);
+	void CarregaObjetoAluno() {
+		aluno.setMatricula(codigoMatricula);
+		aluno.setIdCurso(idCurso);
+		try {
+			Date dataMatricula;
+			dataMatricula = funcoesData.dataAtual();
+			aluno.setDataMatricula(dataMatricula);
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	void percorreListaMunicipio() {
-		professorService.buscarMunicipio(listaMunucipios);
-		for(int i=0; i<listaMunucipios.size(); i++) {
-			Municipio municipio;
-			municipio= listaMunucipios.get(i);
-			String muni =  municipio.getNomeMunicipio();
-			municipios.addItem(muni);
+		try {
+			alunoService.buscarMunicipio(listaMunucipios);
+			for(int i=0; i<listaMunucipios.size(); i++) {
+				Municipio municipio;
+				municipio= listaMunucipios.get(i);
+				String muni =  municipio.getNomeMunicipio();
+				municipios.addItem(muni);
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
-	}	
+	};
 	
-	 int isInteger(String text) {
-		 int cont = 0;
-		 for(int i=0; i<text.length(); i++) {
-			 if(Character.isDigit(text.charAt(i))) {
-				 cont++;
-			 }
-		 }
-		 return cont;
-	 }
-	 
-	 void campoValidacao(String nome, int cpf, int data, String email, String logra, String bairro, int cep, String codigoMatricula, int contDataMatricula, String formacao) {
-			
+	void percorreListaCurso(){
+		try {
+			alunoService.buscarCurso(listaCursos);
+			for(int i=0; i<listaCursos.size(); i++){
+				Curso curso = listaCursos.get(i);
+				String curs = curso.getNome();
+				cursos.addItem(curs);	
+			}
+		}
+		catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	};
+	
+	
+	void campoValidacao(String nome, int cpf, int data, String email, String logra, String bairro, int cep, String codigoMatricula) {
 			if(nome.isEmpty())
 				jlobrigatorio1.setVisible(true);
 			else
@@ -639,17 +678,7 @@ public class InterfaceProfessor extends JFrame {
 			if(codigoMatricula.isEmpty())
 				jlobrigatorioCodigoMatricula.setVisible(true);
 			else
-				jlobrigatorioCodigoMatricula.setVisible(false);
-		 
-			if(contDataMatricula != 8)
-				jlobrigatorioDataMatricula.setVisible(true);
-			else
-				jlobrigatorioDataMatricula.setVisible(false);
-			
-			if(formacao.isEmpty())
-				jlobrigatorioFormacao.setVisible(true);
-			else
-				jlobrigatorioFormacao.setVisible(false);
+				jlobrigatorioCodigoMatricula.setVisible(false);				
 		 }
 		
 		private void campusFalse() {
@@ -660,13 +689,10 @@ public class InterfaceProfessor extends JFrame {
 			jlobrigatorioLogra.setVisible(false);
 			jlobrigatorioBairro.setVisible(false);
 			jlobrigatorioCep.setVisible(false);
-			jlobrigatorioCodigoMatricula.setVisible(false);
-			jlobrigatorioDataMatricula.setVisible(false);
-			jlobrigatorioFormacao.setVisible(false);
 			
 			txfNome.setText("");
 			jFormattedTextCpf.setText("");
-			jFormattedTextData.setValue(null);
+			jFormattedTextData.setText("");
 			txfEmail.setText("");
 			txfLogradouro.setText("");
 			txfBairro.setText("");
@@ -674,18 +700,14 @@ public class InterfaceProfessor extends JFrame {
 			txfNumero.setText("");
 			txfComplemento.setText("");
 			txfMatricula.setText("");
-			txfFormacao.setText("");
-			jFormattedTextDataMatricula.setText("");
+			jlData.setText("");
+			jlData.setVisible(false);
+			jlDataMatricula.setVisible(false);
+
 			clickDuplo=false;
 			txfNome.requestFocus();
 		}
-
-	void buscarTabela(){	
-		listaProfessores.clear();
-		professorService.buscarProfessores(listaProfessores);
-	}
-
-	public static void main(String[] args) throws IOException {
-		new InterfaceProfessor();		
+	public static void main(String args[]) throws IOException {
+		new InterfaceAluno();
 	}
 }

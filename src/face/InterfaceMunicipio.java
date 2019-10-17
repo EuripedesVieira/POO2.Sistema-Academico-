@@ -55,7 +55,7 @@ public class InterfaceMunicipio extends JFrame {
 	private int numeroLinha;
 	private int id;
 	
-	private boolean click_duplo = false; 
+	private boolean clickDuplo = false; 
 	
 	
 	Municipio municipio = new Municipio();
@@ -112,7 +112,7 @@ public class InterfaceMunicipio extends JFrame {
 					txfNome.setText(nomeMunicipio);
 					ufs.setSelectedItem(uf);
 					
-					click_duplo = true;
+					clickDuplo = true;
 					jlobrigatorio1.setVisible(false);
 				}
 			}
@@ -243,7 +243,7 @@ public class InterfaceMunicipio extends JFrame {
 				municipio.setUf(uf);
 				
 				if(!nomeMunicipio.isEmpty() && !uf.isEmpty()) {
-					if(click_duplo==true){
+					if(clickDuplo==true){
 						municipio.setIdMunicipio(id);
 						try {
 							municipioService.atualizar(municipio);
@@ -274,14 +274,14 @@ public class InterfaceMunicipio extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				limpaCampos();
 				campusFalse();
-				if(click_duplo==true) 
-					click_duplo=false;
+				if(clickDuplo==true) 
+					clickDuplo=false;
 			}
 		});
 
 		jbExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(click_duplo==true){
+				if(clickDuplo==true){
 					try {
 						municipioService.deletar(id);
 						atualizarPainel();
@@ -289,6 +289,7 @@ public class InterfaceMunicipio extends JFrame {
 					} catch (Exception e1) {
 						JOptionPane.showMessageDialog(null, e1.getMessage());
 					}
+					clickDuplo=false;
 				}
 				limpaCampos();
 				campusFalse();
@@ -300,7 +301,7 @@ public class InterfaceMunicipio extends JFrame {
 	void atualizarPainel() {
 		buscarTabela();
 		containerPrincipal.add(scrlMunicipio);
-		click_duplo=false;
+		clickDuplo=false;
 		limpaCampos();
 		txfNome.requestFocus();
 		campusFalse();

@@ -20,7 +20,7 @@ public class ServiceGrade {
 	//select disciplinas_grades.idgrade, grades.nomegrade,grades.idcurso,disciplinas_grades.iddisciplina, disciplinas.codigoDisciplina, disciplinas.nomeDisciplina from disciplinas_grades inner join disciplinas on disciplinas_grades.idDisciplina=disciplinas.iddisciplina inner join grades on disciplinas_grades.idgrade=grades.idgrade;
 	PreparedStatement ps;
 	
-	public void salvar(Grade grade, List<Disciplina> disciplinasAdds) {
+	public void salvar(Grade grade, List<Disciplina> disciplinasAdds)throws Exception {
 		
 		String command = "insert into grades (nomeGrade, idCurso) values (?,?)";
 		try {
@@ -50,14 +50,17 @@ public class ServiceGrade {
 				}
 				catch (SQLException e) {
 					e.printStackTrace();
+					throw new Exception("Erro ao salvar disciplinas-grades");
 				}
 			    
 			}
-
-			
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro a salvar grades");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
@@ -75,9 +78,36 @@ public class ServiceGrade {
 		}
 	}
 	
-	public void deletar(int linha) {
+	public void deletar(int idGrade) throws Exception {
 		
-		String command = "delete from grades where idGrade=?";
+		String command;
+		try {
+			deletarDisciplinasGrades(idGrade);
+			try {
+				
+				command = "delete from grades where idGrade=?";
+				ps = DataBase.retornaConexecao().prepareStatement(command);
+				ps.setInt(1,idGrade);
+				ps.executeUpdate();	
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new Exception("Erro ao deletar grade");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new Exception("Erro ao deletar disciplianas grades");
+		}
+		finally {
+			ps.close();
+		}
+	
+	};
+	
+	public void deletarDisciplinasGrades(int linha) throws Exception {
+		
+		String command = "delete from disciplinas_grades where idGrade=?";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
 			ps.setInt(1,linha);
@@ -85,10 +115,14 @@ public class ServiceGrade {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao deletar " + e.getMessage());
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
-	public void atualizar(Grade grade) {
+	public void atualizar(Grade grade)throws Exception {
 		
 		String command = "update grades set nomeGrade=?, idCurso=? where idGrade=?";
 		try {
@@ -100,10 +134,15 @@ public class ServiceGrade {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao atualizar grades");
 		}
+		finally {
+			ps.close();
+		}
+		
 	}
 	
-	public void buscar(List<Grade> grades) {
+	public void buscar(List<Grade> grades) throws Exception {
 		
 		String command = "select grades.idgrade, grades.nomegrade, grades.idcurso, cursos.nomecurso from grades inner join cursos on cursos.idcurso=grades.idcurso";
 		try {
@@ -129,10 +168,14 @@ public class ServiceGrade {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao buscar grades");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
-	public void buscarItem(Grade grade, int id) {
+	public void buscarItem(Grade grade, int id) throws Exception {
 		
 		String command = "select *from grades";
 		try {
@@ -154,11 +197,14 @@ public class ServiceGrade {
 			}
 			
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new Exception("Erro ao buscar grade selecionada");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
-	public void buscarCursos(List<Curso> cursos) {
+	public void buscarCursos(List<Curso> cursos) throws Exception{
 		
 		String command = "select *from cursos";
 		try {
@@ -179,11 +225,14 @@ public class ServiceGrade {
 			}
 		}
 		catch (SQLException e) {
-			e.printStackTrace();
+			throw new Exception("Erro ao buscar cursos");
+		}
+		finally {
+			ps.close();
 		}
 	}
 	
-	public void buscarDisciplinas(List<Disciplina> disciplinas) {
+	public void buscarDisciplinas(List<Disciplina> disciplinas) throws Exception{
 		
 		String command = "select *from disciplinas";
 		try {
@@ -208,6 +257,10 @@ public class ServiceGrade {
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
+			throw new Exception("Erro ao buscar de disciplinas");
+		}
+		finally {
+			ps.close();
 		}
 	
 	}
@@ -217,7 +270,6 @@ public class ServiceGrade {
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
 			ResultSet result = ps.executeQuery();
-			
 			String cursoReplace = curso.replace(" ","");
 			cursoReplace = cursoReplace.trim();
 						
@@ -225,7 +277,6 @@ public class ServiceGrade {
 				
 				int idCurso = result.getInt(1);
 				String nomeCurso = result.getString(2);
-				
 				nomeCurso = nomeCurso.replace(" ","");
 				nomeCurso = nomeCurso.trim();
 								
@@ -274,7 +325,7 @@ public class ServiceGrade {
 	}
 	
 	
-	public void buscarDisciplinasSelecionadas(List<Disciplina>disciplinasSelecionadas, int idGradeSelecionada){
+	public void buscarDisciplinasSelecionadas(List<Disciplina>disciplinasSelecionadas, int idGradeSelecionada) throws Exception{
 		String command = "select disciplinas_grades.idgrade, disciplinas_grades.iddisciplina, disciplinas.codigoDisciplina, disciplinas.nomeDisciplina from disciplinas_grades inner join disciplinas on disciplinas_grades.idDisciplina=disciplinas.iddisciplina";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
@@ -297,7 +348,35 @@ public class ServiceGrade {
 			}
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			throw new Exception("Erro ao buscar disciplinas selecionadas");
+		}
+		finally {
+			ps.close();
+		}
+		
+	}
+	
+	public void atualizarDisciplinaGrade(List<Disciplina> disciplinasAdds, int idGrade)throws Exception {
+		
+		deletarDisciplinasGrades(idGrade);
+		String command = "insert into disciplinas_grades (idGrade, idDisciplina) values (?,?)";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			
+			for(int i=0; i<disciplinasAdds.size(); i++) {
+				Disciplina disciplina; 
+				disciplina = disciplinasAdds.get(i);
+				ps.setInt(1, idGrade);
+				ps.setInt(2, disciplina.getIdDisciplina());
+				ps.executeUpdate();
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			throw new Exception("Erro ao salvar disciplinas-grades");
+		}
+		finally {
+			ps.close();
 		}
 		
 	}

@@ -109,11 +109,25 @@ public class InterfaceGrade extends JFrame {
 	
 	void buscarTabela(){
 		listaGrade.clear();
-		gradeService.buscar(listaGrade);
-		gradeService.buscarCursos(listaCurso);
-		gradeService.buscarDisciplinas(listaDisciplina);
-
+		
+		try {
+			gradeService.buscar(listaGrade);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
+		
+		try {
+			gradeService.buscarCursos(listaCurso);
+		} catch (Exception e1) {
+			JOptionPane.showMessageDialog(null, e1.getMessage());
+		}
+		
+		try {
+			gradeService.buscarDisciplinas(listaDisciplina);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
+	}
 
 	void percorre() {
 		for(int i=0; i<listaCurso.size(); i++) {
@@ -207,7 +221,11 @@ public class InterfaceGrade extends JFrame {
 					cursos.setSelectedItem(curso);
 					
 					listaDisciplinaAdds.clear();
-					gradeService.buscarDisciplinasSelecionadas(listaDisciplinaAdds,id);
+					try {
+						gradeService.buscarDisciplinasSelecionadas(listaDisciplinaAdds,id);
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage());
+					}
 					containerDisci.add(scrlDisciplinaAdds);
 					
 					clickDuplo = true;
@@ -309,11 +327,10 @@ public class InterfaceGrade extends JFrame {
 		txfNome.setBounds(30, 50, 300, 30);
 		containerPrincipal.add(txfNome);
 		
-		
+	
 		cursos = new JComboBox<String>();
 		cursos.setBounds(350, 50, 300, 30);
 		containerPrincipal.add(cursos);
-
 	};
 
 	void defineLb() {
@@ -393,44 +410,34 @@ public class InterfaceGrade extends JFrame {
 				curso = (String) cursos.getSelectedItem();
 				idCurso=gradeService.idCursoParaGrade(curso);
 				
-				if(clickDuplo==true) {
-					if(!nomeGrade.isEmpty() && !curso.isEmpty() && !listaDisciplinaAdds.isEmpty()) {
-									
-						grade.setIdGrade(id);
-						grade.setNomeGrade(nomeGrade);
-						grade.setIdCurso(idCurso);
-						
-						gradeService.atualizar(grade);
-						buscarTabela();
-						JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
-						limpaCampos();
-						
-						containerPrincipal.add(scrlGrade);
-						campusFalse();
+				grade.setNomeGrade(nomeGrade);
+				grade.setIdCurso(idCurso);
+				
+				if(!nomeGrade.isEmpty() && !curso.isEmpty() && !listaDisciplinaAdds.isEmpty()) {
+					if(clickDuplo==true) {
+						grade.setIdGrade(id);						
+						try {
+							gradeService.atualizar(grade);
+							gradeService.atualizarDisciplinaGrade(listaDisciplinaAdds,id);
+							JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
+							atualizarFrame();
+						} catch (Exception e2) {
+							JOptionPane.showMessageDialog(null, e2.getMessage());
+						}
 					}
-					else {
-						 campoValidacao(nomeGrade,listaDisciplinaAdds);
+					else{	
+						grade.setNomeCurso(curso);
+						try {
+							gradeService.salvar(grade,listaDisciplinaAdds);
+							JOptionPane.showMessageDialog(null,"Salvo com sucesso");
+							atualizarFrame();
+						} catch (Exception e2) {
+							JOptionPane.showMessageDialog(null,e2.getMessage());
+						}
 					}
 				}
-				
-				else{	
-					if(!nomeGrade.isEmpty() && !curso.isEmpty() && !listaDisciplinaAdds.isEmpty()) {
-
-						grade.setNomeGrade(nomeGrade);
-						grade.setIdCurso(idCurso);
-						grade.setNomeCurso(curso);
-						
-						gradeService.salvar(grade,listaDisciplinaAdds);
-						buscarTabela();
-						JOptionPane.showMessageDialog(null,"Salvo com sucesso");
-						limpaCampos();
-						containerPrincipal.add(scrlGrade);
-						campusFalse();
-
-					}
-					else {
-						 campoValidacao(nomeGrade,listaDisciplinaAdds);
-					}
+				else{
+					campoValidacao(nomeGrade,listaDisciplinaAdds);
 				}
 			}
 		});
@@ -439,26 +446,31 @@ public class InterfaceGrade extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				limpaCampos();
 				campusFalse();
-
 			}
 		});
 
 		jbExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(clickDuplo==true){
-					gradeService.deletar(id);
-					buscarTabela();
-					JOptionPane.showMessageDialog(null, "Deletado com sucesso");
-					containerPrincipal.add(scrlGrade);
-					clickDuplo=false;
-					limpaCampos();
-					campusFalse();
+					try {
+						gradeService.deletar(id);
+						JOptionPane.showMessageDialog(null, "Deletado com sucesso");
+					}catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage());
+					}
+					atualizarFrame();
 				}
 				limpaCampos();
 				campusFalse();
 			}
 		});
 	};
+	void atualizarFrame() {
+		buscarTabela();
+		containerPrincipal.add(scrlGrade);
+		limpaCampos();
+		campusFalse();
+	}
 	public static void main(String[] args) throws IOException{
 		new InterfaceGrade();		
 	};
