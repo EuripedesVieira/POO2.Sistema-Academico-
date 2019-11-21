@@ -3,6 +3,7 @@
 public class Grade {
 	private int idGrade;
 	private int idCurso;
+	private String codigoGrade;
 	private String nomeGrade;
 	private String nomeCurso;
 
@@ -15,6 +16,12 @@ public class Grade {
 	
 	public int getIdGrade() {
 		return idGrade;
+	}
+	public String getCodigoGrade() {
+		return codigoGrade;
+	}
+	public void setCodigoGrade(String codigoGrade) {
+		this.codigoGrade = codigoGrade;
 	}
 	public void setIdGrade(int idGrade) {
 		this.idGrade = idGrade;

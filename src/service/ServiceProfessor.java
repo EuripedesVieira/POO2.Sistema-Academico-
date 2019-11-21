@@ -211,6 +211,26 @@ public class ServiceProfessor {
 		return 0;
 	}
 	
+	
+public String buscarNomeMunicipio(int idMunicipio){
+		
+		String command ="select *from municipios where idMunicipio=?";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps.setInt(1, idMunicipio);
+			ResultSet result = ps.executeQuery();
+						
+			while(result.next()) {
+				String nomeMunicipio = result.getString(2);
+				return nomeMunicipio;
+			}		
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public void buscarItem(Professor professor, int id) {
 		
 		String command = "select *from professores";
@@ -304,18 +324,4 @@ public class ServiceProfessor {
 			e.printStackTrace();
 		}
 	}
-	
-	public Date dataParaSalvar(String dataNascimento) throws ParseException {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		java.util.Date dataConvertida = simpleDateFormat.parse(dataNascimento);
-		java.sql.Date dataParaArmazenar = new java.sql.Date(dataConvertida.getTime());
-		return dataParaArmazenar;
-	}
-	
-	public String dataParaMostar(Date data) throws ParseException {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		String dataParaInterface = simpleDateFormat.format(data); 
-		return dataParaInterface;
-	}
-
 }

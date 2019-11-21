@@ -22,10 +22,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
-import database.DataBase;
 import modelTable.TableProfessor;
 import models.Municipio;
 import models.Pessoa;
@@ -63,6 +63,7 @@ public class InterfaceProfessor extends JFrame {
 	private JLabel jlMatricula;
 	private JLabel jlDataMatricula;
 	private JLabel jlFormacao;
+	private JLabel jlAno;
 	
 	private JLabel jlobrigatorio1;
 	private JLabel jlobrigatorio2;
@@ -72,7 +73,6 @@ public class InterfaceProfessor extends JFrame {
 	private JLabel jlobrigatorioBairro;
 	private JLabel jlobrigatorioCep;
 	private JLabel jlobrigatorioCodigoMatricula;
-	private JLabel jlobrigatorioDataMatricula;
 	private JLabel jlobrigatorioFormacao;
 	
 	private String campo = "Campo obrigatório";	
@@ -103,7 +103,6 @@ public class InterfaceProfessor extends JFrame {
 	private JFormattedTextField jFormattedTextCpf;
 	private JFormattedTextField jFormattedTextData;
 	private JFormattedTextField jFormattedTextCep;
-	private JFormattedTextField jFormattedTextDataMatricula;
 	
 	private JButton jbSalvar;
 	private JButton jbExcluir;
@@ -231,28 +230,32 @@ public class InterfaceProfessor extends JFrame {
 		containerDadosProfessores.setVisible(true);
 		
 		txfMatricula = new JTextField();
-		txfMatricula.setBounds(30, 50, 300, 30);
+		txfMatricula.setBounds(30, 50, 200, 30);
 		containerDadosProfessores.add(txfMatricula);
 		
-	    jFormattedTextDataMatricula = new JFormattedTextField(mascaraData);
-		jFormattedTextDataMatricula.setBounds(350, 50, 150, 30);
-		containerDadosProfessores.add(jFormattedTextDataMatricula);
-		
 		txfFormacao = new JTextField();
-		txfFormacao .setBounds(520, 50, 300, 30);
+		txfFormacao .setBounds(250, 50, 200, 30);
 		containerDadosProfessores.add(txfFormacao);
 		
 		jlMatricula = new JLabel("Codígo da matricula");
 		jlMatricula.setBounds(30, 30, 150, 20);
 		containerDadosProfessores.add(jlMatricula);
 		
-		jlDataMatricula = new JLabel("Data da Matricula");
-		jlDataMatricula.setBounds(350, 30, 150, 20);
-		containerDadosProfessores.add(jlDataMatricula);
-		
 		jlFormacao = new JLabel("Formação");
-		jlFormacao.setBounds(520, 30, 100, 20);
+		jlFormacao.setBounds(250, 30, 100, 20);
 		containerDadosProfessores.add(jlFormacao);
+		
+		jlAno = new JLabel("Data da matrícula");
+		jlAno.setBounds(470, 30, 150, 20);
+		jlAno.setVisible(false);
+		containerDadosProfessores.add(jlAno);
+				
+		Border border = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
+		jlDataMatricula = new JLabel();
+		jlDataMatricula.setBounds(470, 50, 150, 30);
+		jlDataMatricula.setBorder(border);
+		jlDataMatricula.setVisible(false);
+		containerDadosProfessores.add(jlDataMatricula);
 		
 		jlobrigatorioCodigoMatricula = new JLabel(campo);
 		jlobrigatorioCodigoMatricula.setForeground(Color.red);
@@ -260,15 +263,9 @@ public class InterfaceProfessor extends JFrame {
 		jlobrigatorioCodigoMatricula.setVisible(false);
 		containerDadosProfessores.add(jlobrigatorioCodigoMatricula);
 		
-		jlobrigatorioDataMatricula = new JLabel(campo);
-		jlobrigatorioDataMatricula.setForeground(Color.red);
-		jlobrigatorioDataMatricula.setBounds(350, 80, 150, 20);
-		jlobrigatorioDataMatricula.setVisible(false);
-		containerDadosProfessores.add(jlobrigatorioDataMatricula);
-		
 		jlobrigatorioFormacao= new JLabel(campo);
 		jlobrigatorioFormacao.setForeground(Color.red);
-		jlobrigatorioFormacao.setBounds(520, 80, 150, 20);
+		jlobrigatorioFormacao.setBounds(250, 80, 150, 20);
 		jlobrigatorioFormacao.setVisible(false);
 		containerDadosProfessores.add(jlobrigatorioFormacao);
 	}
@@ -378,12 +375,14 @@ public class InterfaceProfessor extends JFrame {
 				if(e.getClickCount()>=2) {
 					int numeroLinha = tblProfessor.getSelectedRow();
 					Professor dados = listaProfessores.get(numeroLinha);
+					
 					idProfessor = dados.getIdProfessor();
 					idPessoa = professorService.buscarIdPessoa(idProfessor);
 					professorService.buscarPessoa(pessoa, idPessoa);
 										
 					idPessoa = pessoa.getIdPessoa();
 					idMunucipio = pessoa.getIdMunicipio();
+					String nomeMunicipio = professorService.buscarNomeMunicipio(idMunucipio);
 					cpf = pessoa.getCpf();
 					nome = pessoa.getNome();
 					sexo = pessoa.getSexo();
@@ -401,10 +400,12 @@ public class InterfaceProfessor extends JFrame {
 					try {
 						String dataNascimentoParaMostrar;
 						String dataMatriculaParaMostrar;
-						dataNascimentoParaMostrar = professorService.dataParaMostar(dataNascimento);
-						dataMatriculaParaMostrar = professorService.dataParaMostar(dataNascimento);
+						dataNascimentoParaMostrar = funcoesData.dataParaMostar(dataNascimento);
+						dataMatriculaParaMostrar = funcoesData.dataParaMostar(dataNascimento);
 						jFormattedTextData.setText(dataNascimentoParaMostrar);
-						jFormattedTextDataMatricula.setText(dataMatriculaParaMostrar);
+						jlDataMatricula.setText(dataMatriculaParaMostrar);
+						jlDataMatricula.setVisible(true);
+						jlAno.setVisible(true);
 					} catch (ParseException e1) {
 						e1.printStackTrace();
 					}
@@ -422,7 +423,7 @@ public class InterfaceProfessor extends JFrame {
 					txfLogradouro.setText(logradouro);
 					txfNumero.setText(numero);
 					txfComplemento.setText(complemento);
-					
+					municipios.setSelectedItem(nomeMunicipio);
 					
 					txfFormacao.setText(dados.getFormacao());
 					txfMatricula.setText(dados.getMatriculaProfessor());
@@ -468,7 +469,6 @@ public class InterfaceProfessor extends JFrame {
 				int contdata = isInteger(jFormattedTextData.getText());
 				int contcpf = isInteger(jFormattedTextCpf.getText());
 				int contcep = isInteger(jFormattedTextCep.getText());
-				int contDataMatricula = isInteger(jFormattedTextDataMatricula.getText());
 				
 				nome = txfNome.getText().trim();
 				cpf = jFormattedTextCpf.getText();
@@ -485,17 +485,15 @@ public class InterfaceProfessor extends JFrame {
 				codigoMatricula = txfMatricula.getText().trim();
 				formacao = txfFormacao.getText().trim();
 								
-				if(contdata==8 && contDataMatricula==8) {
+				if(contdata==8) {
 					String dataNascimento = jFormattedTextData.getText();
-					String dataMatricula = jFormattedTextDataMatricula.getText();
 
 					isDate = funcoesData.isDate(dataNascimento);
 
 					if(isDate==true) {
-						JOptionPane.showMessageDialog(null, "Data correta");
 						try {
-							dataConvertida = professorService.dataParaSalvar(dataNascimento);
-							dataMatriculaConvertida = professorService.dataParaSalvar(dataMatricula);
+							dataConvertida = funcoesData.dataParaSalvar(dataNascimento);
+							dataMatriculaConvertida = funcoesData.dataAtual();
 						} catch (ParseException e1) {
 							e1.printStackTrace();
 						}
@@ -505,11 +503,9 @@ public class InterfaceProfessor extends JFrame {
 					}
 				}
 				
-
-				
 				if(contcpf==11 && !nome.isEmpty() && !sexo.isEmpty() && contdata == 8
 				   && !logradouro.isEmpty() && !bairro.isEmpty() && contcep == 8 && !email.isEmpty()
-				   && !codigoMatricula.isEmpty() && contDataMatricula==8 && !formacao.isEmpty()) {
+				   && !codigoMatricula.isEmpty() && !formacao.isEmpty()) {
 			
 					carregaObjetoPessoa();
 					CarregaObjetoProfessor();
@@ -533,7 +529,7 @@ public class InterfaceProfessor extends JFrame {
 					campusFalse();
 				}
 				else {
-					campoValidacao(nome,contcpf,contdata,email,logradouro,bairro,contcep,codigoMatricula,contDataMatricula,formacao);
+					campoValidacao(nome,contcpf,contdata,email,logradouro,bairro,contcep,codigoMatricula,formacao);
 				}
 			}
 		});
@@ -599,7 +595,7 @@ public class InterfaceProfessor extends JFrame {
 		 return cont;
 	 }
 	 
-	 void campoValidacao(String nome, int cpf, int data, String email, String logra, String bairro, int cep, String codigoMatricula, int contDataMatricula, String formacao) {
+	 void campoValidacao(String nome, int cpf, int data, String email, String logra, String bairro, int cep, String codigoMatricula, String formacao) {
 			
 			if(nome.isEmpty())
 				jlobrigatorio1.setVisible(true);
@@ -640,11 +636,6 @@ public class InterfaceProfessor extends JFrame {
 				jlobrigatorioCodigoMatricula.setVisible(true);
 			else
 				jlobrigatorioCodigoMatricula.setVisible(false);
-		 
-			if(contDataMatricula != 8)
-				jlobrigatorioDataMatricula.setVisible(true);
-			else
-				jlobrigatorioDataMatricula.setVisible(false);
 			
 			if(formacao.isEmpty())
 				jlobrigatorioFormacao.setVisible(true);
@@ -661,7 +652,6 @@ public class InterfaceProfessor extends JFrame {
 			jlobrigatorioBairro.setVisible(false);
 			jlobrigatorioCep.setVisible(false);
 			jlobrigatorioCodigoMatricula.setVisible(false);
-			jlobrigatorioDataMatricula.setVisible(false);
 			jlobrigatorioFormacao.setVisible(false);
 			
 			txfNome.setText("");
@@ -675,8 +665,11 @@ public class InterfaceProfessor extends JFrame {
 			txfComplemento.setText("");
 			txfMatricula.setText("");
 			txfFormacao.setText("");
-			jFormattedTextDataMatricula.setText("");
 			clickDuplo=false;
+			
+			jlDataMatricula.setVisible(false);
+			jlAno.setVisible(false);
+			
 			txfNome.requestFocus();
 		}
 

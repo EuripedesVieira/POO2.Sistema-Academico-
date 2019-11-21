@@ -40,5 +40,17 @@ public class FuncoesData {
 		Date dataSalvar = dataParaSalvar(date);
 		return dataSalvar;
 	}
-
+	/*
+	public String anoAtual() throws ParseException {
+		LocalDate dataAtual = LocalDate.now();
+		String date = dataAtual.format(DateTimeFormatter.ofPattern("yyyy"));		
+		return date;
+	};*/
+	
+	public int anoAtual() throws ParseException {
+		LocalDate dataAtual = LocalDate.now();
+		String date = dataAtual.format(DateTimeFormatter.ofPattern("yyyy"));
+		int ano = Integer.valueOf(date);
+		return ano;
+	};
 }

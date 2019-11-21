@@ -4,10 +4,12 @@ public class Turma {
 
 	private int idTurma;
 	private int idProfessor;
-	private int idDisciplina_grade;
+	private int idGrade;
+	private String nomeGrade;
+	private String nomeProfessor;
 	private String codigo;
-	private String ano;
-	private String semestre;
+	private int ano;
+	private int semestre;
 	
 	public int getIdTurma() {
 		return idTurma;
@@ -21,11 +23,17 @@ public class Turma {
 	public void setIdProfessor(int idProfessor) {
 		this.idProfessor = idProfessor;
 	}
-	public int getIdDisciplina_grade() {
-		return idDisciplina_grade;
+	public int getIdGrade() {
+		return idGrade;
 	}
-	public void setIdDisciplina_grade(int idDisciplina_grade) {
-		this.idDisciplina_grade = idDisciplina_grade;
+	public void setIdGrade(int idGrade) {
+		this.idGrade = idGrade;
+	}
+	public String getNomeGrade() {
+		return nomeGrade;
+	}
+	public void setNomeGrade(String nomeGrade) {
+		this.nomeGrade = nomeGrade;
 	}
 	public String getCodigo() {
 		return codigo;
@@ -33,19 +41,22 @@ public class Turma {
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}
-	public String getAno() {
+	public int getAno() {
 		return ano;
 	}
-	public void setAno(String ano) {
+	public void setAno(int ano) {
 		this.ano = ano;
 	}
-	public String getSemestre() {
+	public int getSemestre() {
 		return semestre;
 	}
-	public void setSemestre(String semestre) {
+	public void setSemestre(int semestre) {
 		this.semestre = semestre;
 	}
-	
-	
-	
+	public String getNomeProfessor() {
+		return nomeProfessor;
+	}
+	public void setNomeProfessor(String nomeProfessor) {
+		this.nomeProfessor = nomeProfessor;
+	}
 }

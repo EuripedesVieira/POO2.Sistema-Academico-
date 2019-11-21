@@ -2,17 +2,20 @@ package modelTable;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.table.AbstractTableModel;
-import models.Disciplina;
 
-public class TableDisciplina  extends AbstractTableModel {
+import javax.swing.table.AbstractTableModel;
+
+import models.Aluno;
+
+public class TableTurmaAluno extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private List<Disciplina> disciplinas = new ArrayList<Disciplina>();
-	String[] cabecalho = {"Código","Disciplina"};
+	private List<Aluno> alunos = new ArrayList<Aluno>();
+
+	String[] cabecalho = {"Nome","Curso"};
 	
-	public TableDisciplina (List<Disciplina> disciplinas) {
-		this.disciplinas = disciplinas;
+	public TableTurmaAluno (List<Aluno> alunos) {
+		this.alunos = alunos;
 	}
 	
 	public int getColumnCount() {
@@ -24,13 +27,14 @@ public class TableDisciplina  extends AbstractTableModel {
 	}
 	
 	public int getRowCount() {
-		return disciplinas.size();
+		return alunos.size();
 	}
 
 	public Object getValueAt(int linha, int coluna) {
 		switch (coluna) {
-			case 0: return disciplinas.get(linha).getCodigoDisciplina();
-			case 1: return disciplinas.get(linha).getNomeDisciplina();
+		
+			case 0: return alunos.get(linha).getNomeAluno();
+			case 1: return alunos.get(linha).getNomeCurso();
 			default: return null;
 		}
 	}

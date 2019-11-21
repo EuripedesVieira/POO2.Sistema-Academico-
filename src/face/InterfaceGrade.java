@@ -294,8 +294,7 @@ public class InterfaceGrade extends JFrame {
 				}
 				
 				if(e.getClickCount()==1){
-					disciplinaAddSelecionada=true;
-					
+					disciplinaAddSelecionada=true;	
 				}
 			}
 		});
