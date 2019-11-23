@@ -5,6 +5,8 @@ public class Turma {
 	private int idTurma;
 	private int idProfessor;
 	private int idGrade;
+	private int idCurso;
+	private int idDisciplina;
 	private String nomeGrade;
 	private String nomeProfessor;
 	private String codigo;
@@ -28,6 +30,18 @@ public class Turma {
 	}
 	public void setIdGrade(int idGrade) {
 		this.idGrade = idGrade;
+	}
+	public int getIdCurso() {
+		return idCurso;
+	}
+	public int getIdDisciplina() {
+		return idDisciplina;
+	}
+	public void setIdCurso(int idCurso) {
+		this.idCurso = idCurso;
+	}
+	public void setIdDisciplina(int idDisciplina) {
+		this.idDisciplina = idDisciplina;
 	}
 	public String getNomeGrade() {
 		return nomeGrade;

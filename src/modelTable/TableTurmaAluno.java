@@ -6,15 +6,16 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import models.Aluno;
+import models.AlunoTurmaTable;
 
 public class TableTurmaAluno extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-	private List<Aluno> alunos = new ArrayList<Aluno>();
+	private List<AlunoTurmaTable> alunos = new ArrayList<AlunoTurmaTable>();
 
 	String[] cabecalho = {"Nome","Curso"};
 	
-	public TableTurmaAluno (List<Aluno> alunos) {
+	public TableTurmaAluno (List<AlunoTurmaTable> alunos) {
 		this.alunos = alunos;
 	}
 	

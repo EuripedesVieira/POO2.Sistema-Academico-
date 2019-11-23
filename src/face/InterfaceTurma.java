@@ -23,7 +23,7 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import modelTable.TableTurma;
 import modelTable.TableTurmaAluno;
-import models.Aluno;
+import models.AlunoTurmaTable;
 import models.Curso;
 import models.CursoGrade;
 import models.DisciplinaGrade;
@@ -31,7 +31,6 @@ import models.Grade;
 import models.Professor;
 import models.Turma;
 import service.FuncoesData;
-//import models.Turma;
 import service.ServiceTurma;
 
 public class InterfaceTurma extends JFrame {
@@ -78,8 +77,10 @@ public class InterfaceTurma extends JFrame {
 	private int idTurma;
 	private int idProfessor;
 	private int idGrade;
+	private int idDisciplina;
 	private int idDisciplinaGrade;
 	private int semestreNumero;
+	private int idCurso;
 
 	
 	private final String campo = "Campo obrigatório";
@@ -91,8 +92,8 @@ public class InterfaceTurma extends JFrame {
 
 	private List<Turma> listaTurma = new ArrayList<Turma>();
 	private List<Curso> listaCurso = new ArrayList<Curso>();
-	private List<Aluno> listaAlunos = new ArrayList<Aluno>();
-	private List<Aluno> listaAlunosAdds = new ArrayList<Aluno>();
+	private List<AlunoTurmaTable> listaAlunos = new ArrayList<AlunoTurmaTable>();
+	private List<AlunoTurmaTable> listaAlunosAdds = new ArrayList<AlunoTurmaTable>();
 	private List<Grade> listaGrade = new ArrayList<Grade>();
 	private List<Professor> listaProfessores = new ArrayList<Professor>();
 	private List<CursoGrade> listaCursoGrade = new ArrayList<CursoGrade>();
@@ -172,6 +173,12 @@ public class InterfaceTurma extends JFrame {
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.getMessage());
 		}
+		
+		try {
+			turmaService.buscarTurma(listaTurma);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
 	};
 	
 	void defineJP() {
@@ -202,7 +209,7 @@ public class InterfaceTurma extends JFrame {
 		jbAdicionar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(alunoSelecionado) {
-					Aluno x = listaAlunos.get(numeroLinha);
+					AlunoTurmaTable x = listaAlunos.get(numeroLinha);
 					if(verificaAlunoAdd(x.getIdAluno())){
 						listaAlunosAdds.add(x);
 						containerDisci.add(scrlTurmaAlunoAdds);
@@ -221,7 +228,7 @@ public class InterfaceTurma extends JFrame {
 		jbAddTodos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {				
 				for(int i=0; i<listaAlunos.size(); i++) {
-					Aluno x = listaAlunos.get(i);
+					AlunoTurmaTable x = listaAlunos.get(i);
 					if(verificaAlunoAdd(x.getIdAluno()))
 						listaAlunosAdds.add(x);
 				}
@@ -275,15 +282,14 @@ public class InterfaceTurma extends JFrame {
 					alunoSelecionado=true;
 				}
 				
-				
 				if (e.getClickCount()>=2) {
-					Aluno aluno = listaAlunos.get(numeroLinha);
+					AlunoTurmaTable aluno = listaAlunos.get(numeroLinha);
 					if(verificaAlunoAdd(aluno.getIdAluno())){
 						listaAlunosAdds.add(aluno);
 						alunoSelecionado=false;
 						containerDisci.add(scrlTurmaAlunoAdds);}
 					else
-						JOptionPane.showMessageDialog(null, "Discicplina já foi escolhida");
+						JOptionPane.showMessageDialog(null, "Aluno já foi escolhido");
 
 				}
 			}
@@ -321,7 +327,7 @@ public class InterfaceTurma extends JFrame {
 	
 	public Boolean verificaAlunoAdd(int idAluno) {
 		for(int i=0; i<listaAlunosAdds.size(); i++) {
-			Aluno x;
+			AlunoTurmaTable x;
 			x = listaAlunosAdds.get(i);
 			if(x.getIdAluno()==idAluno) {
 				return false;
@@ -433,7 +439,41 @@ public class InterfaceTurma extends JFrame {
 		containerPrincipal.add(scrlTurma);
 		tblTurma.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() >= 2) {}
+				if (e.getClickCount() >= 2) {
+					clickDuplo=true;
+					numeroLinha = tblTurma.getSelectedRow();
+					turma = listaTurma.get(numeroLinha);
+										
+					try {
+						nomeCurso=turmaService.buscarCurso(turma.getIdCurso());
+						nomeGrade=turmaService.buscarGrade(turma.getIdGrade());
+						nomeDisciplina=turmaService.buscarDisciplina(turma.getIdDisciplina());
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage());
+					}
+					
+					txfCodigo.setText(turma.getCodigo());
+					cursos.setSelectedItem(nomeCurso);
+					grades.setSelectedItem(nomeGrade);
+					disciplinas.setSelectedItem(nomeDisciplina);
+					professores.setSelectedItem(turma.getNomeProfessor());
+					
+					if(turma.getSemestre()==1){
+						semestres.setSelectedIndex(0);
+					}
+					else
+						semestres.setSelectedIndex(1);
+
+					try {
+						listaAlunosAdds.clear();
+						turmaService.buscarAlunosAdds(listaAlunosAdds,turma.getIdTurma());
+						containerDisci.add(scrlTurmaAlunoAdds);
+						
+					} catch (Exception e1) {
+						
+						JOptionPane.showMessageDialog(null, e1.getMessage());
+					}
+				}
 			}
 		});
 	};
@@ -445,41 +485,39 @@ public class InterfaceTurma extends JFrame {
 
 				if(!codigoTurma.isEmpty() && !listaAlunosAdds.isEmpty()) {		
 					salvar();
-
 					if(clickDuplo==true) {
-						System.out.println("atualiza");
-						//turmaService.atualizar(turma,listaAlunosAdds);
-						JOptionPane.showMessageDialog(null, "Salvo com sucesso");
-					}
-					else {
 						try {
-							//turmaService.salvar(turma,listaAlunosAdds);
-							//int idD=idDisciplinaGrade();
-							//JOptionPane.showMessageDialog(null,"Salvo com sucesso");
-						//	JOptionPane.showMessageDialog(null,idD);
+							turmaService.atualizar(turma);
+							turmaService.atualizarTurmaAluno(listaAlunosAdds,turma.getIdTurma());
+							atualizarTabela();
+							JOptionPane.showMessageDialog(null, "Atualizado com sucesso");
+							clickDuplo=false;
 						} catch (Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage());
 						}
-
+					}
+					else {
+						try {
+							turmaService.salvar(turma,listaAlunosAdds);
+							JOptionPane.showMessageDialog(null,"Salvo com sucesso");
+							atualizarTabela();
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage());
+						}
 					};
 					campusFalse();
 				}
 				else {
 					verificaCampus();
 				};
-				System.out.println("Grade: "+nomeGrade);
-				System.out.println("Semestre: "+semestre);
-				System.out.println("nome professor: "+nomeProfessor);
-				System.out.println("Id grade: "+idGrade);
-				System.out.println("Id professor: "+idProfessor);
-				System.out.println("Semestre: "+semestreNumero);
-				System.out.println("Ano: "+ano);
 			}
 		});
 		
 		jbCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				campusFalse();
+				 setcombo();
+				
 			}
 		});
 
@@ -487,12 +525,13 @@ public class InterfaceTurma extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(clickDuplo==true){
 					try {
-						turmaService.deletar(idTurma);
+						turmaService.deletar(turma.getIdTurma());
 						JOptionPane.showMessageDialog(null, "Deletado com sucesso");
+						clickDuplo=false;
+						atualizarTabela();
 					}catch (Exception e1) {
 						JOptionPane.showMessageDialog(null, e1.getMessage());
 					}
-					//atualizarFrame();
 				}
 				campusFalse();
 			}
@@ -506,7 +545,6 @@ public class InterfaceTurma extends JFrame {
 				nomeGrade = (String) grades.getSelectedItem();
 				disciplinas.removeAllItems();
 				percorreDisciplinaGrade(nomeGrade);
-
 			}
 		});
 		
@@ -520,10 +558,18 @@ public class InterfaceTurma extends JFrame {
 				System.out.println(nomeGrade);
 				if(nomeGrade!=null)
 					percorreDisciplinaGrade(nomeGrade);
-					
-
 			}
 		});
+	}
+	
+	private void atualizarTabela() {
+		try {
+			listaTurma.clear();
+			turmaService.buscarTurma(listaTurma);
+			containerPrincipal.add(scrlTurma);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage());
+		}
 	}
 	
 	private void percorreCursos() {
@@ -533,7 +579,6 @@ public class InterfaceTurma extends JFrame {
 				curso = listaCurso.get(i);
 				String nome =  curso.getNome();
 				cursos.addItem(nome);
-				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -551,7 +596,6 @@ public class InterfaceTurma extends JFrame {
 				if(!nomeGrade.equals(nomegrade))
 					continue;
 				disciplinas.addItem(nomeDisciplina);
-				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -596,7 +640,17 @@ public class InterfaceTurma extends JFrame {
 			if(nome.equals(professor.getNomeProfessor()))
 				return professor.getIdProfessor();
 		}
-		return 1;
+		return 0;
+	};
+	
+	private int idCurso(String nome) {
+		for(int i=0; i<listaCurso.size(); i++) {
+			Curso curso;
+			curso = listaCurso.get(i);
+			if(nome.equals(curso.getNome()))
+				return curso.getIdCurso();
+		}
+		return 0;
 	};
 	
 	private int idGrade(String nomeGrade) {
@@ -606,27 +660,21 @@ public class InterfaceTurma extends JFrame {
 			if(nomeGrade.equals(grade.getNomeGrade()))
 				return grade.getIdGrade();
 		}
-		return 1;
+		return 0;
 	};
 	
-	private int idDisciplinaGrade() {
-		List<DisciplinaGrade> possiveis = new ArrayList<DisciplinaGrade>();
+	private int idDisciplina(String nomedisciplina){
 		for(int i=0; i<listaDisciplinaGrade.size(); i++) {
-			DisciplinaGrade disciplinagrade;
-			disciplinagrade = listaDisciplinaGrade.get(i);
-			if(disciplinagrade.getIdGrade()==idGrade) {
-				possiveis.add(disciplinagrade);
-			}
-		}
-		for(int i=0; i<possiveis.size(); i++) {
-			DisciplinaGrade digrade;
-			digrade = possiveis.get(i);
-			if(nomeDisciplina.equals(digrade.getNomeDisciplina()))
-					return digrade.getIdDisciplinaGrade();
+			DisciplinaGrade discplinagrade;
+			discplinagrade = listaDisciplinaGrade.get(i);
+			String nomeDisciplina =  discplinagrade.getNomeDisciplina();
+			int idDisciplina = discplinagrade.getIdDisciplina();
+			if(nomeDisciplina.equals(nomedisciplina))
+				return idDisciplina; 
 		}
 		return 0;
 	}
-	
+
 	private int NumeroSemestre(String semestre) {
 		if(!semestre.isEmpty()){
 			int valor;
@@ -668,7 +716,6 @@ public class InterfaceTurma extends JFrame {
 			jlobrigatorio2.setVisible(true);
 		else
 			jlobrigatorio2.setVisible(false);
-		
 	};
 	
 	void salvar() {
@@ -689,13 +736,22 @@ public class InterfaceTurma extends JFrame {
 		nomeCurso = (String) cursos.getSelectedItem();
 		nomeGrade = (String) grades.getSelectedItem();
 		semestre = (String) semestres.getSelectedItem();
+		nomeDisciplina = (String) disciplinas.getSelectedItem();
 		nomeProfessor = (String) professores.getSelectedItem();
 		
 		idProfessor = idProfessor(nomeProfessor);
+		idCurso=idCurso(nomeCurso);
 		idGrade = idGrade(nomeGrade);
+		idDisciplina=idDisciplina(nomeDisciplina);
 		semestreNumero= NumeroSemestre(semestre);
-		idDisciplinaGrade=idDisciplinaGrade();
-		System.out.println("ID disciplina:"+ idDisciplinaGrade);
+		codigoTurma=txfCodigo.getText();
+		
+		try {
+			idDisciplinaGrade = turmaService.BuscarIDDisciplinaTurna(idGrade, idDisciplina);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		
 	};
 	
 	void setTurma() {
@@ -703,7 +759,17 @@ public class InterfaceTurma extends JFrame {
 		turma.setSemestre(semestreNumero);
 		turma.setIdGrade(idGrade);
 		turma.setIdProfessor(idProfessor);
+		turma.setIdCurso(idCurso);
+		turma.setIdDisciplina(idDisciplina);
 		turma.setAno(ano);
+		turma.setCodigo(codigoTurma);
+	}
+	
+	void setcombo() {
+		cursos.setSelectedIndex(0);
+		grades.setSelectedIndex(0);
+		disciplinas.setSelectedIndex(0);
+		professores.setSelectedIndex(0);
 	}
 	
 	public static void main(String[] args) throws IOException {

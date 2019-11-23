@@ -12,6 +12,7 @@ public class Aluno {
 	private String nomeCurso;
 	private int idCurso;
 	
+	
 	public String getNomeAluno() {
 		return nomeAluno;
 	}
