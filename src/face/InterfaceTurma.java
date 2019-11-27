@@ -58,6 +58,7 @@ public class InterfaceTurma extends JFrame {
 	private JLabel jlSemestre;
 	private JLabel jlProfessor;
 	private JLabel jlcurso;
+	private JLabel jldisciplina;
 	
 	private JComboBox<String>grades;
 	private JComboBox<String>semestres;
@@ -197,7 +198,7 @@ public class InterfaceTurma extends JFrame {
 		title.setTitleColor(Color.black);
 	
 		containerDisci = new JPanel();
-		containerDisci.setBounds(30, 105, 1160, 300);
+		containerDisci.setBounds(30, 135, 1160, 300);
 		containerDisci.setBorder(title);
 		containerPrincipal.add(containerDisci);
 		containerDisci.setLayout(null);
@@ -208,7 +209,7 @@ public class InterfaceTurma extends JFrame {
 		containerDisci.add(jbAdicionar);
 		jbAdicionar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(alunoSelecionado) {
+				if(alunoSelecionado){
 					AlunoTurmaTable x = listaAlunos.get(numeroLinha);
 					if(verificaAlunoAdd(x.getIdAluno())){
 						listaAlunosAdds.add(x);
@@ -343,25 +344,25 @@ public class InterfaceTurma extends JFrame {
 		containerPrincipal.add(txfCodigo);
 		
 		cursos = new JComboBox<String>();
-		cursos.setBounds(250, 50, 190, 30);
+		cursos.setBounds(250, 50, 300, 30);
 		containerPrincipal.add(cursos);
 	
 		grades = new JComboBox<String>();
-		grades.setBounds(460, 50, 190, 30);
+		grades.setBounds(570, 50, 300, 30);
 		containerPrincipal.add(grades);
 		
 		semestres = new JComboBox<String>();
-		semestres.setBounds(670, 50, 150, 30);
+		semestres.setBounds(570, 100, 150, 30);
 		semestres.addItem("1º semestre");
 		semestres.addItem("2º semestre");
 		containerPrincipal.add(semestres);
 		
 		professores = new JComboBox<String>();
-		professores.setBounds(840, 50, 350, 30);
+		professores.setBounds(30, 100, 520, 30);
 		containerPrincipal.add(professores);
 		
 		disciplinas = new JComboBox<String>();
-		disciplinas.setBounds(850, 465, 350, 30);
+		disciplinas.setBounds(890, 50, 300, 30);
 		containerPrincipal.add(disciplinas);
 
 	};
@@ -373,7 +374,7 @@ public class InterfaceTurma extends JFrame {
 		containerPrincipal.add(jlCodigo);
 		
 		jlGrades = new JLabel("Grades");
-		jlGrades.setBounds(460, 30, 100, 20);
+		jlGrades.setBounds(570, 30, 100, 20);
 		containerPrincipal.add(jlGrades);
 		
 		jlAno = new JLabel("Ano");
@@ -389,41 +390,45 @@ public class InterfaceTurma extends JFrame {
 		containerPrincipal.add(jlAnoAtual);
 		
 		jlSemestre = new JLabel("Semestre");
-		jlSemestre.setBounds(670, 30, 100, 20);
+		jlSemestre.setBounds(570, 80, 100, 20);
 		containerPrincipal.add(jlSemestre);
 		
-		jlProfessor = new JLabel("Professor");
-		jlProfessor.setBounds(840, 30, 100, 20);
+		jlProfessor = new JLabel("Professores");
+		jlProfessor.setBounds(30, 80, 100, 20);
 		containerPrincipal.add(jlProfessor);
 		
-		jlcurso = new JLabel("Curso");
+		jlcurso = new JLabel("Cursos");
 		jlcurso.setBounds(250,30,100,20);
 		containerPrincipal.add(jlcurso);
+		
+		jldisciplina = new JLabel("Disciplinas");
+		jldisciplina.setBounds(890, 30, 100, 20);
+		containerPrincipal.add(jldisciplina);
 		
 		jlobrigatorioCodigo = new JLabel(campo);
 		jlobrigatorioCodigo.setForeground(Color.red);
 		jlobrigatorioCodigo.setBounds(30, 80, 150, 20);
 		jlobrigatorioCodigo.setVisible(false);
-		containerPrincipal.add(jlobrigatorioCodigo);
+		//containerPrincipal.add(jlobrigatorioCodigo);
 		
 		jlobrigatorio2 = new JLabel("Selecione ao menos uma disciplina");
 		jlobrigatorio2.setForeground(Color.red);
-		jlobrigatorio2.setBounds(30, 405, 250, 20);
+		jlobrigatorio2.setBounds(30, 275, 250, 20);
 		jlobrigatorio2.setVisible(false);
-		containerPrincipal.add(jlobrigatorio2);
+		containerDisci.add(jlobrigatorio2);
 	};
 	
 	void defineBt() {
 		jbSalvar = new JButton("Salvar");
-		jbSalvar.setBounds(30, 425, 100, 20);
+		jbSalvar.setBounds(30, 450, 100, 20);
 		containerPrincipal.add(jbSalvar);
 
 		jbExcluir = new JButton("Excluir");
-		jbExcluir.setBounds(140, 425, 100, 20);
+		jbExcluir.setBounds(140, 450, 100, 20);
 		containerPrincipal.add(jbExcluir);
 
 		jbCancelar = new JButton("Cancelar");
-		jbCancelar.setBounds(250, 425, 100, 20);
+		jbCancelar.setBounds(250, 450, 100, 20);
 	    containerPrincipal.add(jbCancelar);
 	};
 	
@@ -434,7 +439,7 @@ public class InterfaceTurma extends JFrame {
 		modelotabelaTurma = new TableTurma(listaTurma);
 		tblTurma = new JTable(modelotabelaTurma);
 		scrlTurma = new JScrollPane(tblTurma);
-		scrlTurma.setBounds(30, 465, 800, 250);
+		scrlTurma.setBounds(30, 485, 800, 250);
 		scrlTurma.setBorder(title);
 		containerPrincipal.add(scrlTurma);
 		tblTurma.addMouseListener(new MouseAdapter() {

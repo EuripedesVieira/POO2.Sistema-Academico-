@@ -517,7 +517,7 @@ public class InterfaceProfessor extends JFrame {
 					}	
 					else{
 						try {
-							professorService.salvar(pessoa, professor);
+							professorService.salvar(pessoa,professor);
 							JOptionPane.showMessageDialog(null, "Salvo com sucesso");
 						} catch (Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage());

@@ -23,6 +23,7 @@ import javax.swing.border.TitledBorder;
 import database.DataBase;
 import modelTable.TableDisciplina;
 import modelTable.TableGrade;
+import models.AlunoTurmaTable;
 import models.Curso;
 import models.Disciplina;
 import models.Grade;
@@ -154,6 +155,23 @@ public class InterfaceGrade extends JFrame {
 		jbAdicionar =new JButton(">");
 		jbAdicionar.setBounds(540,50,80,30);
 		containerDisci.add(jbAdicionar);
+		jbAdicionar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				/*if(alunoSelecionado){
+					AlunoTurmaTable x = listaAlunos.get(numeroLinha);
+					if(verificaAlunoAdd(x.getIdAluno())){
+						listaAlunosAdds.add(x);
+						containerDisci.add(scrlTurmaAlunoAdds);
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Aluno já adicionado");
+					}
+					alunoSelecionado=false;
+				}*/
+				
+			}
+		});
+		
 		
 		jbAddTodos = new JButton(">>");
 		jbAddTodos.setBounds(540, 100, 80, 30);
@@ -388,7 +406,6 @@ public class InterfaceGrade extends JFrame {
 			jlobrigatorio1.setVisible(true);
 		else
 			jlobrigatorio1.setVisible(false);
-		
 		if(disciplinas.isEmpty())
 			jlobrigatorio2.setVisible(true);
 		else
