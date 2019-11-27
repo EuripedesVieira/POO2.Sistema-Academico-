@@ -19,11 +19,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-
 import database.DataBase;
 import modelTable.TableDisciplina;
 import modelTable.TableGrade;
-import models.AlunoTurmaTable;
 import models.Curso;
 import models.Disciplina;
 import models.Grade;
@@ -157,17 +155,17 @@ public class InterfaceGrade extends JFrame {
 		containerDisci.add(jbAdicionar);
 		jbAdicionar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				/*if(alunoSelecionado){
-					AlunoTurmaTable x = listaAlunos.get(numeroLinha);
-					if(verificaAlunoAdd(x.getIdAluno())){
-						listaAlunosAdds.add(x);
-						containerDisci.add(scrlTurmaAlunoAdds);
+				if(disciplinaSelecionada){
+					Disciplina x = listaDisciplina.get(numeroLinha);
+					if(percorrelistaDisciplina(x.getIdDisciplina())){
+						listaDisciplinaAdds.add(x);
+						containerDisci.add(scrlDisciplinaAdds);
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Aluno já adicionado");
 					}
-					alunoSelecionado=false;
-				}*/
+					disciplinaSelecionada=false;
+				}
 				
 			}
 		});
@@ -193,6 +191,7 @@ public class InterfaceGrade extends JFrame {
 		jbRemover.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(disciplinaAddSelecionada) {
+					numeroLinha = tblDisciplinaAdds.getSelectedRow();
 					listaDisciplinaAdds.remove(numeroLinha);
 					containerDisci.add(scrlDisciplinaAdds);
 					disciplinaAddSelecionada=false;
@@ -232,9 +231,7 @@ public class InterfaceGrade extends JFrame {
 					
 					id = grade.getIdGrade();
 					String nomeGrade = grade.getNomeGrade();
-					int idCurso = grade.getIdCurso();
-					String curso = gradeService.nomeCursoParaGrade(idCurso);
-					
+					String curso = grade.getNomeCurso();
 					txfNome.setText(nomeGrade);
 					cursos.setSelectedItem(curso);
 					
@@ -331,7 +328,7 @@ public class InterfaceGrade extends JFrame {
 	
 	void defineJP() {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setTitle("Grades");
 		containerPrincipal = new JPanel();
 		containerPrincipal.setLayout(null);

@@ -151,7 +151,7 @@ public class InterfaceProfessor extends JFrame {
 	
 	void defineJP() {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setTitle("Professores");
 		containerPrincipal = new JPanel();
 		containerPrincipal.setLayout(null);

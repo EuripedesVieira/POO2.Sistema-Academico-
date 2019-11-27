@@ -21,6 +21,9 @@ import models.Turma;
 
 public class ServiceTurma {
 	
+	//select turmas.idturma, turmas.codigoturma, turmas.idprofessor, turmas.ano, turmas.semestre, turmas.idcurso, disciplinas_grades.idgrade, disciplinas_grades.iddisciplina from turmas inner join disciplinas_grades on turmas.iddisciplinagrade=disciplinas_grades.id_disciplina_grade
+	
+	
 	PreparedStatement ps;
 	
 	public void buscarGrades(List<Grade> grades) throws Exception {
@@ -232,7 +235,7 @@ public class ServiceTurma {
 	
 	public void salvar(Turma turma, List<AlunoTurmaTable> alunosAdds)throws Exception {
 		
-		String command = "insert into turmas (codigoturma,idprofessor,ano,semestre,idcurso,idgrade,iddisciplina) values (?,?,?,?,?,?,?)";
+		String command = "insert into turmas (codigoturma,idprofessor,ano,semestre,idcurso,iddisciplinagrade) values (?,?,?,?,?,?)";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command,Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, turma.getCodigo());
@@ -240,8 +243,7 @@ public class ServiceTurma {
 			ps.setInt(3, turma.getAno());
 			ps.setInt(4, turma.getSemestre());
 			ps.setInt(5, turma.getIdCurso());
-			ps.setInt(6, turma.getIdGrade());
-			ps.setInt(7, turma.getIdDisciplina());
+			ps.setInt(6, turma.getIdDisciplinaGrade());
 			ps.executeUpdate();
 
 			ResultSet rsKey = ps.getGeneratedKeys();
@@ -280,7 +282,7 @@ public class ServiceTurma {
 	
 	public void atualizar(Turma turma) throws Exception {
 		String command="update turmas set "
-		+ "codigoturma=?,idprofessor=?,ano=?,semestre=?,idcurso=?,idgrade=?,iddisciplina=? where idturma=?";
+		+ "codigoturma=?,idprofessor=?,ano=?,semestre=?,idcurso=?,iddisciplinagrade=? where idturma=?";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
 			ps.setString(1, turma.getCodigo());
@@ -288,9 +290,8 @@ public class ServiceTurma {
 			ps.setInt(3, turma.getAno());
 			ps.setInt(4,turma.getSemestre());
 			ps.setInt(5, turma.getIdCurso());
-			ps.setInt(6, turma.getIdGrade());
-			ps.setInt(7, turma.getIdDisciplina());
-			ps.setInt(8,turma.getIdTurma());
+			ps.setInt(6, turma.getIdDisciplinaGrade());
+			ps.setInt(7,turma.getIdTurma());
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -438,11 +439,22 @@ public class ServiceTurma {
 public void buscarTurma(List<Turma> turmas) throws Exception{
 		
 
-	String command = "select turmas.idturma,turmas.codigoturma,turmas.ano, turmas.semestre, pessoas.nome,"
+	/*String command = "select turmas.idturma,turmas.codigoturma,turmas.ano, turmas.semestre, pessoas.nome,"
 			+ " grades.nomegrade,turmas.idcurso,turmas.idgrade, turmas.iddisciplina"
 			+ " from turmas inner join professores on turmas.idprofessor=professores.idprofessor"
 			+ " inner join pessoas on professores.idpessoa=pessoas.idpessoa"
-			+ " inner join grades on turmas.idgrade=grades.idgrade"; 
+			+ " inner join grades on turmas.idgrade=grades.idgrade"; */
+	
+	String command="select turmas.idturma, turmas.codigoturma, "
+			+ "turmas.ano, turmas.semestre, pessoas.nome, grades.nomegrade, "
+			+ "turmas.idcurso, disciplinas_grades.idgrade, "
+			+ "disciplinas_grades.iddisciplina from turmas inner join "
+			+ "disciplinas_grades on turmas.iddisciplinagrade=disciplinas_"
+			+ "grades.id_disciplina_grade inner join professores on "
+			+ "turmas.idprofessor=professores.idprofessor inner join "
+			+ "pessoas on professores.idpessoa=pessoas.idpessoa inner "
+			+ "join grades on disciplinas_grades.idgrade=grades.idgrade";
+	
 	try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
 			ResultSet result = ps.executeQuery();
@@ -458,8 +470,7 @@ public void buscarTurma(List<Turma> turmas) throws Exception{
 				String nomeProfessor = result.getString(5);
 				String nomeGrade = result.getString(6);
 				int idcurso = result.getInt(7);
-				int idgrade = result.getInt(8);
-				int iddisciplina = result.getInt(9);
+				int iddisciplinagrade = result.getInt(8);
 				
 				turma.setIdTurma(idTurma);
 				turma.setCodigo(codigo);
@@ -468,9 +479,7 @@ public void buscarTurma(List<Turma> turmas) throws Exception{
 				turma.setNomeProfessor(nomeProfessor);
 				turma.setNomeGrade(nomeGrade);
 				turma.setIdCurso(idcurso);
-				turma.setIdGrade(idgrade);
-				turma.setIdDisciplina(iddisciplina);
-
+				turma.setIdDisciplinaGrade(iddisciplinagrade);
 				turmas.add(turma);
 			}
 		}

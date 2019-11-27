@@ -30,7 +30,6 @@ public class InterfaceMunicipio extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel containerPrincipal;
 	private JTextField txfNome;
-	private JTextField txfUf;
 
 	private JLabel jlNome;
 	private JLabel jlCodigo;
@@ -122,7 +121,7 @@ public class InterfaceMunicipio extends JFrame {
 	
 	void defineJP() {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setTitle("Municipios");
 		containerPrincipal = new JPanel();
 		containerPrincipal.setLayout(null);
@@ -134,11 +133,6 @@ public class InterfaceMunicipio extends JFrame {
 		txfNome = new JTextField();
 		txfNome.setBounds(30, 50, 300, 30);
 		containerPrincipal.add(txfNome);
-		
-		txfUf = new JTextField();
-		txfUf.setBounds(350, 50, 300, 30);
-		//containerPrincipal.add(txfUf);
-		
 		
 		ufs = new JComboBox<String>();
 		ufs.addItem("GO");
@@ -212,7 +206,6 @@ public class InterfaceMunicipio extends JFrame {
 
 	private void limpaCampos() {
 		txfNome.setText("");
-		txfUf.setText("");
 	}
 	
 	private void campusFalse() {
@@ -276,6 +269,7 @@ public class InterfaceMunicipio extends JFrame {
 				campusFalse();
 				if(clickDuplo==true) 
 					clickDuplo=false;
+				ufs.setSelectedIndex(0);
 			}
 		});
 
@@ -305,6 +299,7 @@ public class InterfaceMunicipio extends JFrame {
 		limpaCampos();
 		txfNome.requestFocus();
 		campusFalse();
+		ufs.setSelectedIndex(0);
 	}
 	
 	public static void main(String[] args) throws IOException{

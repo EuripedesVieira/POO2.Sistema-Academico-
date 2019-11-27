@@ -4,9 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import database.DataBase;
 import models.Municipio;
 
@@ -76,7 +73,6 @@ public class ServiceMunicipio {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
 			ResultSet result = ps.executeQuery();
 			
-			
 			while(result.next()) {
 				Municipio municipio = new Municipio();
 				int idMunicipio = result.getInt(1);
@@ -92,33 +88,6 @@ public class ServiceMunicipio {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new Exception("Erro ao buscar dados");
-		}
-	}
-	
-	public void buscarItem(Municipio municipio, int id) throws Exception {
-		
-		String command = "select *from municipios";
-		try {
-			ps = DataBase.retornaConexecao().prepareStatement(command);
-			ResultSet result = ps.executeQuery();
-						
-			while(result.next()) {
-				
-				if(result.getInt(1)==id) {
-					int idMunicipio = result.getInt(1);
-					String nomeMunicipio = result.getString(2);
-					String ufMunicipio = result.getString(3);
-				
-					municipio.setIdMunicipio(idMunicipio);
-					municipio.setNomeMunicipio(nomeMunicipio);
-					municipio.setUf(ufMunicipio);
-					System.out.println(municipio.getNomeMunicipio());
-				}
-			}
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new Exception("Erro ao buscar municípios");
 		}
 	}
 }

@@ -8,7 +8,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import face.InterfaceAluno;
 import face.InterfaceCurso;
+import face.InterfaceDisciplina;
+import face.InterfaceGrade;
+import face.InterfaceMunicipio;
+import face.InterfaceProfessor;
+import face.InterfaceTurma;
 
 public class Teste3 extends JFrame {
 
@@ -63,7 +69,7 @@ public class Teste3 extends JFrame {
 		but1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new InterfaceCurso();
+					new InterfaceAluno();
 				} catch (IOException e1) {
 				}
 			}
@@ -93,7 +99,7 @@ public class Teste3 extends JFrame {
 		but3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new InterfaceCurso();
+					new InterfaceDisciplina();
 				} catch (IOException e1) {
 				}
 			}
@@ -106,10 +112,10 @@ public class Teste3 extends JFrame {
 		but4.setForeground(Color.white);
 		but4.setBorder(new LineBorder(Color.blue,3,true));
 		cont1.add(but4);
-		but1.addActionListener(new ActionListener() {
+		but4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new InterfaceCurso();
+					new InterfaceGrade();
 				} catch (IOException e1) {
 				}
 			}
@@ -124,7 +130,7 @@ public class Teste3 extends JFrame {
 		but5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new InterfaceCurso();
+					new InterfaceMunicipio();
 				} catch (IOException e1) {
 				}
 			}
@@ -139,7 +145,7 @@ public class Teste3 extends JFrame {
 		but6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new InterfaceCurso();
+					new InterfaceProfessor();
 				} catch (IOException e1) {
 				}
 			}
@@ -154,7 +160,7 @@ public class Teste3 extends JFrame {
 		but7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new InterfaceCurso();
+					new InterfaceTurma();
 				} catch (IOException e1) {
 				}
 			}

@@ -54,7 +54,7 @@ public class InterfaceDisciplina extends JFrame {
 	private int numeroLinha;
 	private int id;
 	
-	private boolean click_duplo = false; 
+	private boolean clickDuplo = false; 
 	
 	Disciplina disciplina = new Disciplina();
 	DataBase database = new DataBase();
@@ -91,10 +91,8 @@ public class InterfaceDisciplina extends JFrame {
 	void modeloTabelaM() {
 		ModelotabelaDisciplina = new TableDisciplina(listaDisciplina);
 		tblDisciplina = new JTable(ModelotabelaDisciplina);
-		tblDisciplina.setBackground(Color.white);
 		scrlDisciplina = new JScrollPane(tblDisciplina);
 		scrlDisciplina.setBounds(30, 200, 620, 200);
-		scrlDisciplina.setBackground(Color.white);
 
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder("Dsiciplinas");
@@ -113,7 +111,7 @@ public class InterfaceDisciplina extends JFrame {
 					txfCodigo.setText(codigo);
 					txfNome.setText(nome);
 					
-					click_duplo = true;
+					clickDuplo = true;
 					jlobrigatorio1.setVisible(false);
 				}
 			}
@@ -122,11 +120,10 @@ public class InterfaceDisciplina extends JFrame {
 
 	void defineJP() {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setTitle("Disciplinas");
 		containerPrincipal = new JPanel();
 		containerPrincipal.setLayout(null);
-		containerPrincipal.setBackground(Color.white);
 		add(containerPrincipal);
 	};
 
@@ -219,7 +216,7 @@ public class InterfaceDisciplina extends JFrame {
 				disciplina.setNomeDisciplina(nomeCurso);
 				
 				if(!nomeCurso.isEmpty() && !codigoDisciplina.isEmpty()) {
-					if(click_duplo==true) {
+					if(clickDuplo==true) {
 						disciplina.setIdDisciplina(id);
 						try {
 							disciplinaService.atualizar(disciplina);
@@ -250,14 +247,14 @@ public class InterfaceDisciplina extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				limpaCampos();
 				campusFalse();
-				if(click_duplo==true) 
-					click_duplo=false;
+				if(clickDuplo==true) 
+					clickDuplo=false;
 			}
 		});
 
 		jbExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(click_duplo==true) {
+				if(clickDuplo==true) {
 					try {
 						disciplinaService.deletar(id);
 						JOptionPane.showMessageDialog(null, "Deletado com sucesso");
@@ -268,7 +265,7 @@ public class InterfaceDisciplina extends JFrame {
 				}
 				limpaCampos();
 				campusFalse();
-				click_duplo=false;
+				clickDuplo=false;
 				txfCodigo.requestFocus();
 			}
 		});
@@ -280,7 +277,7 @@ public class InterfaceDisciplina extends JFrame {
 		containerPrincipal.add(scrlDisciplina);
 		campusFalse();
 		txfCodigo.requestFocus();
-		click_duplo=false;
+		clickDuplo=false;
 	}
 	
 	public static void main(String[] args) throws IOException{

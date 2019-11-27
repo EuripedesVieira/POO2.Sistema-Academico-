@@ -89,7 +89,6 @@ public class InterfaceTurma extends JFrame {
 	private boolean clickDuplo=false;
 	private boolean alunoSelecionado=false;
 	private boolean alunoAddSelecionado=false;
-	private boolean jaselionado= false;
 
 	private List<Turma> listaTurma = new ArrayList<Turma>();
 	private List<Curso> listaCurso = new ArrayList<Curso>();
@@ -184,7 +183,7 @@ public class InterfaceTurma extends JFrame {
 	
 	void defineJP() {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setTitle("Turmas");
 		containerPrincipal = new JPanel();
 		containerPrincipal.setLayout(null);
@@ -560,7 +559,6 @@ public class InterfaceTurma extends JFrame {
 				
 				disciplinas.removeAllItems();
 				nomeGrade = (String) grades.getSelectedItem();
-				System.out.println(nomeGrade);
 				if(nomeGrade!=null)
 					percorreDisciplinaGrade(nomeGrade);
 			}
@@ -762,12 +760,15 @@ public class InterfaceTurma extends JFrame {
 	void setTurma() {
 		turma.setCodigo(codigoTurma);
 		turma.setSemestre(semestreNumero);
-		turma.setIdGrade(idGrade);
 		turma.setIdProfessor(idProfessor);
 		turma.setIdCurso(idCurso);
-		turma.setIdDisciplina(idDisciplina);
 		turma.setAno(ano);
 		turma.setCodigo(codigoTurma);
+		turma.setIdDisciplinaGrade(idDisciplinaGrade);
+		
+		System.out.println("grade: "+idGrade);
+		System.out.println("disciplina: "+idDisciplina);
+		System.out.println("disciplina-grade: "+idDisciplinaGrade);
 	}
 	
 	void setcombo() {

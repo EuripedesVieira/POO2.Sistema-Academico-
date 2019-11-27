@@ -163,7 +163,7 @@ public class ServiceAluno {
 			throw new Exception("Erro ao buscar dados");
 		}
 	};
-
+/*
 	public void buscarPessoa(Pessoa pessoa, int id)throws Exception{
 
 		String command = "select *from pessoas";
@@ -207,6 +207,51 @@ public class ServiceAluno {
 			throw new Exception("Erro ao buscar dados pessoas");
 		}
 	}
+	
+	*/
+	
+	public void buscarPessoa(Pessoa pessoa, int id)throws Exception{
+
+		String command = "select *from pessoas where idPessoa=?";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps.setInt(1, id);
+			ResultSet result = ps.executeQuery();
+
+			while(result.next()) {
+					int idPessoa = result.getInt(1);
+					String cpf = result.getString(2);
+					String nomePessoa = result.getString(3);
+					String sexo = result.getString(4);
+					Date dataNascimento = result.getDate(5);
+					String logradouro = result.getString(6);
+					String cep = result.getString(7);
+					String numero = result.getString(9);
+					String complemento = result.getString(9);
+					String email = result.getString(10);
+					int idMunicipio = result.getInt(11);
+					String bairro = result.getString(12);
+
+					pessoa.setIdPessoa(idPessoa);
+					pessoa.setCpf(cpf);
+					pessoa.setNome(nomePessoa);
+					pessoa.setSexo(sexo);
+					pessoa.setDataNascimento(dataNascimento);
+					pessoa.setLogradouro(logradouro);
+					pessoa.setBairro(bairro);
+					pessoa.setCep(cep);
+					pessoa.setNumero(numero);
+					pessoa.setComplemento(complemento);
+					pessoa.setEmail(email);
+					pessoa.setIdMunicipio(idMunicipio);
+				}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new Exception("Erro ao buscar dados pessoas");
+		}
+	}
+	
 	
 	public void buscarAluno(Aluno aluno, int id) throws Exception{
 		

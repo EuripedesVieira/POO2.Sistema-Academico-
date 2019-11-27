@@ -87,7 +87,7 @@ static PreparedStatement ps;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new Exception("Erro ao buscar dados");
+			throw new Exception("Erro ao buscar disciplinas");
 		}
 		finally {
 			ps.close();

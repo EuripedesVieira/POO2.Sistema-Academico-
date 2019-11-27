@@ -148,7 +148,7 @@ public class InterfaceAluno extends JFrame {
 	
 	void defineJP() {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setTitle("Alunos");
 		containerPrincipal = new JPanel();
 		containerPrincipal.setLayout(null);
@@ -559,7 +559,6 @@ public class InterfaceAluno extends JFrame {
 				campusFalse();
 			}
 		});
-		
 	}
 	
 	void buscarTabela() {
@@ -706,6 +705,7 @@ public class InterfaceAluno extends JFrame {
 
 			clickDuplo=false;
 			txfNome.requestFocus();
+			cursos.setSelectedIndex(0);
 		}
 	public static void main(String args[]) throws IOException {
 		new InterfaceAluno();

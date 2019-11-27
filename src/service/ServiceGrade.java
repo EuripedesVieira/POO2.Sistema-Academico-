@@ -177,16 +177,14 @@ public class ServiceGrade {
 	
 	public void buscarItem(Grade grade, int id) throws Exception {
 		
-		String command = "select *from grades";
+		String command = "select *from grades where idgrade=?";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps.setInt(1, id);
 			ResultSet result = ps.executeQuery();
 						
 			while(result.next()) {
-				if(result.getInt(1)!=id) {
-					continue;
-				}
-				
+			
 				int idGrade = result.getInt(1);
 				String nomeGrade = result.getString(2);
 				int idCurso = result.getInt(3);
@@ -301,20 +299,17 @@ public class ServiceGrade {
 		 System.out.println("Numeros de caracteres "+text+" : "+cont);
 	 }
 	
+
 	public String nomeCursoParaGrade (int curso) {
 		
-		String command ="select *from cursos";
+		String command ="select cursos.nomecurso from cursos where idcurso=?";
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps.setInt(1, curso);
 			ResultSet result = ps.executeQuery();
 						
 			while(result.next()) {
-				int idCurso = result.getInt(1);
-				String nomeCurso = result.getString(2);
-				
-				if(idCurso!=curso)
-					continue;
-				
+				String nomeCurso = result.getString(1);
 				return nomeCurso;
 			}		
 		}
@@ -323,7 +318,6 @@ public class ServiceGrade {
 		}
 		return null;
 	}
-	
 	
 	public void buscarDisciplinasSelecionadas(List<Disciplina>disciplinasSelecionadas, int idGradeSelecionada) throws Exception{
 		String command = "select disciplinas_grades.idgrade, disciplinas_grades.iddisciplina, disciplinas.codigoDisciplina, disciplinas.nomeDisciplina from disciplinas_grades inner join disciplinas on disciplinas_grades.idDisciplina=disciplinas.iddisciplina";

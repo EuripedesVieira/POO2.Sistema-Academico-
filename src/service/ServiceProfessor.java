@@ -258,7 +258,7 @@ public String buscarNomeMunicipio(int idMunicipio){
 			e.printStackTrace();
 		}
 	}
-	
+/*	
 	public int buscarIdPessoa(int idProfe) {
 		
 		String command = "select *from professores";
@@ -281,45 +281,66 @@ public String buscarNomeMunicipio(int idMunicipio){
 		}
 		return 0;
 	}
-	
-	public void buscarPessoa(Pessoa pessoa, int id) {
+*/
+	public int buscarIdPessoa(int idProfe) {
 		
-		String command = "select *from pessoas";
+		String command = "select professores.idPessoa from professores where idprofessor=?";
+		
 		try {
 			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps.setInt(1, idProfe);
 			ResultSet result = ps.executeQuery();
 						
 			while(result.next()) {
-				
-				if(result.getInt(1)==id) {
-					int idPessoa = result.getInt(1);
-					String cpf = result.getString(2);
-					String nomePessoa = result.getString(3);
-					String sexo = result.getString(4);
-					Date dataNascimento = result.getDate(5);
-					String logradouro = result.getString(6);
-					String cep = result.getString(7);
-					String numero = result.getString(8);
-					String complemento = result.getString(9);
-					String email = result.getString(10);
-					int idMunicipio = result.getInt(11);
-					String bairro = result.getString(12);
-					
-					pessoa.setIdPessoa(idPessoa);
-					pessoa.setCpf(cpf);
-					pessoa.setNome(nomePessoa);
-					pessoa.setSexo(sexo);
-					pessoa.setDataNascimento(dataNascimento);
-					pessoa.setLogradouro(logradouro);
-					pessoa.setBairro(bairro);
-					pessoa.setCep(cep);
-					pessoa.setNumero(numero);
-					pessoa.setComplemento(complemento);
-					pessoa.setEmail(email);
-					pessoa.setIdMunicipio(idMunicipio);
-				}
+				int idPessoa = result.getInt(1);				
+				return idPessoa;
 			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	
+	
+	public void buscarPessoa(Pessoa pessoa, int id) {
+		
+		String command = "select *from pessoas where idPessoa=?";
+		try {
+			ps = DataBase.retornaConexecao().prepareStatement(command);
+			ps.setInt(1, id);
+			ResultSet result = ps.executeQuery();
+						
+			while(result.next()) {
 			
+				int idPessoa = result.getInt(1);
+				String cpf = result.getString(2);
+				String nomePessoa = result.getString(3);
+				String sexo = result.getString(4);
+				Date dataNascimento = result.getDate(5);
+				String logradouro = result.getString(6);
+				String cep = result.getString(7);
+				String numero = result.getString(8);
+				String complemento = result.getString(9);
+				String email = result.getString(10);
+				int idMunicipio = result.getInt(11);
+				String bairro = result.getString(12);
+				
+				pessoa.setIdPessoa(idPessoa);
+				pessoa.setCpf(cpf);
+				pessoa.setNome(nomePessoa);
+				pessoa.setSexo(sexo);
+				pessoa.setDataNascimento(dataNascimento);
+				pessoa.setLogradouro(logradouro);
+				pessoa.setBairro(bairro);
+				pessoa.setCep(cep);
+				pessoa.setNumero(numero);
+				pessoa.setComplemento(complemento);
+				pessoa.setEmail(email);
+				pessoa.setIdMunicipio(idMunicipio);
+			}
+		
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
